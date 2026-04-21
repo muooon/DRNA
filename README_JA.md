@@ -132,9 +132,13 @@ class DRNA_ResonantBlock(nn.Module):
 
 ---
 
-BPC 比較図  
+BPC Comparison Chart  
 
+non-mask  
 <img width="800" height="500" alt="bpc_only" src="https://github.com/user-attachments/assets/36a68185-ebf4-4518-83c0-ccb891d327a4" />
+
+use-mask  
+<img width="800" height="500" alt="bpc_mask" src="https://github.com/user-attachments/assets/3e54dcd9-b143-4fbe-a670-91005d2acecf" />
 
 ---
 

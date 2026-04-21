@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 
 '''
-D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260420
+D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260422
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
 螺旋の同期: Attention(文脈の回想)とMLP(知識の定着)を直列に配置し、情報を一段ずつ絞り込む
@@ -56,7 +56,7 @@ class DRNA_Block(nn.Module):
         self.norm2 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x, cos, sin):
+    def forward(self, x, cos, sin, mask=None):
         b, s, d = x.shape
         
         # --- らせんA (Attention Resonance) ---
@@ -67,6 +67,12 @@ class DRNA_Block(nn.Module):
         
         # Scaled Dot-Product Attention
         attn = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.d_head))
+        
+        # マスク適用（ブロードキャスト対応）
+        if mask is not None:
+            # mask形状: (s, s) 又は (b, n_heads, s, s) 等に対応可能
+            attn = attn + mask
+        
         attn = F.softmax(attn, dim=-1)
         
         a_out = (attn @ v).transpose(1, 2).reshape(b, s, d)
@@ -93,12 +99,22 @@ class DRNA_Model(nn.Module):
         
         self.output_head = nn.Linear(d_model, vocab_size)
 
-    def forward(self, x):
+    def forward(self, x, mask=None):
+        b, s = x.shape
+
+        # もし外部からマスクが与えられず、かつGPT的な動作をさせたい場合
+        # ここでは「汎用GPT型」として、デフォルトで因果マスクを生成するようにします
+        if mask is None:
+            # 未来を隠すマスク (右上三角形が-inf)
+            # 形状: (s, s)
+            mask = torch.triu(torch.ones(s, s, device=x.device) * float('-inf'), diagonal=1)
+
         cos, sin = self.rope(x, x.size(1))
         x = self.embed(x)
         
         for layer in self.layers:
-            x = layer(x, cos, sin)
+            # 各層に共通のマスクを伝播
+            x = layer(x, cos, sin, mask=mask)
             
         return self.output_head(x)
 
