@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software or architecture design, please cite it as below."
+authors:
+  - family-names: "muooon"
+title: "D-RNA: Dual-Helix Resonance Neural Architecture"
+version: 1.0.0
+date-released: 2026-04-20
+url: "https://github.com/muooon/DRNA"
+repository-code: "https://github.com/muooon/DRNA"
+keywords:
+  - transformer
+  - neural-architecture
+  - rope
+  - deep-learning
+  - resonant-contraction
+  - resonant-projection-field 
+license: Apache-2.0
+abstract: >-
+  A neural network architecture that implements "Resonant Contraction" 
+  through a Dual-Helix structure, achieving higher information density 
+  than standard Transformers.
