@@ -149,6 +149,26 @@ non-mask
 use-mask  
 <img width="800" height="500" alt="bpc_mask" src="https://github.com/user-attachments/assets/3e54dcd9-b143-4fbe-a670-91005d2acecf" />
 
+
+use-mask 10000step
+<img width="800" height="500" alt="bpc_mask_10000" src="https://github.com/user-attachments/assets/cded1de2-aa29-4519-8100-2f2d35c5d8b2" />  
+Learning Test Status (Details)  
+Model Scale: Dimensions (d_model): 256, Layers (n_layers): 16, Heads (n_heads): 8  
+Training Settings: Dataset: enwik8(100MB),Steps: 10,000, Batch Size: 16, Sequence Length: 512, Optimizer: AdamW (LR: 1e-4)  
+Analysis of Training Results (Summary)  
+Training Efficiency: 30% improvement (Step efficiency: approx. 1.5x)  
+Convergence Speed: 30% reduction in time cost (Convergence Rate accelerated by 1.5x)  
+Parameter Density: Optimized utilization density  
+Structural Advantage: Superior convergence characteristics  
+Information Capacity: Expanded capacity within the same computational budget  
+Core Concept: D-RNA evolved beyond the Transformer by utilizing phase synchronization via a helical structure, achieving these gains solely through internal minimum-cost optimization.  
+
+| Metric                 | Normal Transformer | D-RNA Transformer | Difference / Efficiency      |  
+|------------------------|--------------------|-------------------|------------------------------|  
+| Steps to Reach Target  | 3,850 steps        | 2,600 steps       | ~32.5% reduction             |  
+| Time Required          | 1359.8 sec         | 964.5 sec         | ~29.1% faster                |  
+| VRAM Usage             | 4.49 GB            | 5.02 GB           | +0.53 GB (Structural cost)   |  
+
 ---
 
 License：  

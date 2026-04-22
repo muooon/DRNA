@@ -142,6 +142,27 @@ non-mask
 use-mask  
 <img width="800" height="500" alt="bpc_mask" src="https://github.com/user-attachments/assets/3e54dcd9-b143-4fbe-a670-91005d2acecf" />
 
+
+use-mask 10000step
+<img width="800" height="500" alt="bpc_mask_10000" src="https://github.com/user-attachments/assets/cded1de2-aa29-4519-8100-2f2d35c5d8b2" />  
+
+学習テスト状況(詳細)
+モデル規模：次元数(d_model)：256、レイヤ数(n_layers)：16、ヘッド数(n_heads)：8、学習設定:
+データセット：enwik8(100MB)、ステップ数：10,000、バッチサイズ：16、シーケンス長：512、AdamW(LR：1e-4)
+学習結果解析(概要)
+学習効率(Training Efficiency)：30%向上(ステップ効率：約1.5倍)
+収束速度(Convergence Speed)：時間コスト30%減(収束率(Convergence Rate)1.5倍に加速)
+パラメータの利用密度(Parameter Density)最適化
+収束特性における構造的アドバンテージ
+同一計算予算内における情報保持容量(Information Capacity)拡大
+D-RNA は Transformer に対し、螺旋構造による位相同期を用いることで、内部的最小コストだけで進化しました
+
+| 指標           | Normal Transformer | D-RNA Transformer | 差分 / 効率                 |  
+|----------------|--------------------|-------------------|------------------------------|  
+| 到達Step数     | 3,850 step         | 2,600 step        | 約 32.5% の削減              |  
+| 所要時間       | 1359.8 sec         | 964.5 sec         | 約 29.1% の高速化            |  
+| VRAM使用量     | 4.49 GB            | 5.02 GB           | +0.53 GB (構造的コスト)      |  
+
 ---
 
 ライセンス：  
