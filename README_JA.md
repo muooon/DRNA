@@ -1,6 +1,6 @@
 # D‑RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
 
-[English](README.md) | [日本語](README.jp.md)
+[English](README.md) | [日本語](README.jp.md)  
 
 D-RNA は、二重らせん(Dual‑Helix)構造と RoPE による回転場を中核に据えた新しいニューラルアーキテクチャです  
 
