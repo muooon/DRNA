@@ -30,12 +30,26 @@ This is an advantage for fast convergence, but it also means that careful update
 Parameter commonality:  
 Hyperparameters such as weight initialization seeds and batch size can be inherited directly from standard Transformer settings.  
 
+<details>
+
+<summary> Characteristics of D-RNA </summary>
+
+D-RNA constructs a resonant contraction method (resonant projection field) based on the “phase of the helix.”  
+By transforming sparse structures into dense ones, this approach suppresses destructive forgetting (without causing mutual interference) and accelerates toward the shortest path.  
+Even fine noise facilitates information purification, smoothing the manifold and cumulatively achieving generalization.  
+These mechanisms are independent of any specific framework and function across all optimizers and models.  
+In a sense, it is a mechanism resembling a biological brain, consisting of neuron- and glia-like structures.  
+The resonant contraction method (resonant projection field) ultimately yields an equivalent of an ODE reduction approximation.  
+
+</details>
+
 ---
 
 ### Conceptual Diagram
 
 ```
-	Synchronizing “searching” (Attention) and “knowing” (MLP) in the phase of a spiral.
+	Synchronizing “searching” (Attention)  
+	   and “knowing” (MLP) in the phase of a spiral.  
 
 	RoPE Rotation Field (Phase-Preserving)  
 	Holographic Compression: Turning Sparse into Dense  
