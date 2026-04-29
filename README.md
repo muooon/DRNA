@@ -1,8 +1,8 @@
 # D-RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
 ### Pre-Norm Edition  
 
-## Attention is all you need_started,  
-## Resonance is all you need_endure,  
+### Attention is all you need_started,  
+### Resonance is all you need_endure,  
 
 ⭐ If you like this project, please give it a star ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
@@ -224,3 +224,4 @@ This work builds upon the foundation established by the Transformer architecture
 I would like to express my gratitude to the researchers and open-source communities
 whose contributions to attention mechanisms, positional encoding, and large-scale
 model design made this work possible.  
+Neocognitron―Transformer―D-RNA dream goes on...  
