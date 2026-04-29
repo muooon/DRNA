@@ -1,6 +1,9 @@
 # D‑RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
 ### Pre-Norm Edition  
 
+## 必要なのは「注意」だけ  
+## ｢共鳴｣で保ち続けるだけ  
+
 ⭐ このプロジェクトが気に入ったら"星"を付けてください ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
 

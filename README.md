@@ -1,6 +1,9 @@
 # D-RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
 ### Pre-Norm Edition  
 
+## Attention is all you need_started,  
+## Resonance is all you need_endure,  
+
 ⭐ If you like this project, please give it a star ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
 
