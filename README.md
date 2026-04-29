@@ -1,4 +1,5 @@
 # D-RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
+### Pre-Norm Edition  
 
 ⭐ If you like this project, please give it a star ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
@@ -25,7 +26,7 @@ Optimization of learning rate (LR):
 Because D-RNA synchronizes information extremely quickly through Resonant Contraction, it converges sufficiently — and rapidly — even with a lower learning rate compared to a standard Transformer.  
 If the LR is set too high, the resonance may be excessively amplified and cause oscillation, so starting with a modest LR is recommended.  
 Synergistic gradient effects:  
-Since Attention (recall) and the MLP (memory) are synchronized in a double‑helix sequence, the “settling” of weights from a single update is very strong.  
+Since Attention (recall) and the MLP (memory) are synchronized in a double‑helix sequence, Each weight update exerts a significant impact on synchronization.  
 This is an advantage for fast convergence, but it also means that careful updates are key to stability.  
 Parameter commonality:  
 Hyperparameters such as weight initialization seeds and batch size can be inherited directly from standard Transformer settings.  
@@ -81,14 +82,19 @@ class ResonantBlock(nn.Module):
         self.d_head = dim // n_heads
 
     def forward(self, x, cos, sin):
-        # --- Attention ---
-        q, k, v = project_qkv(x, self.qkv, self.n_heads, self.d_head)
+        # --- Attention Path (Pre-Norm) ---
+        residual = x
+        x_norm = self.norm1(x)  # 演算の前にNormを適用
+        
+        q, k, v = project_qkv(x_norm, self.qkv, self.n_heads, self.d_head)
         q, k = apply_rope(q, k, cos, sin)
         attn_out = attention(q, k, v)
-        x = self.norm1(x + self.out(attn_out))
+        x = residual + self.out(attn_out)
 
-        # --- MLP ---
-        x = self.norm2(x + self.mlp(x))
+        # --- MLP Path (Pre-Norm) ---
+        residual = x
+        x = residual + self.mlp(self.norm2(x))  # 演算の前にNormを適用
+        
         return x
 ```
 
@@ -101,6 +107,7 @@ class DRNA_ResonantBlock(nn.Module):
     """
     Replace the existing TransformerBlock with this ResonantBlock.
     I/O: [Batch, Seq, Dim] -> [Batch, Seq, Dim] (Fully compatible)
+    Architecture: Pre-Norm (Stability-first for Deep Networks)
     """
     def __init__(self, dim, n_heads, mlp_dim_forward=None):
         super().__init__()
@@ -119,7 +126,7 @@ class DRNA_ResonantBlock(nn.Module):
             nn.Linear(mlp_dim, dim)
         )
         
-        # 3. Normalization layer for compression
+        # 3. Normalization layer for pre-processing
         self.norm1 = nn.LayerNorm(dim)
         self.norm2 = nn.LayerNorm(dim)
 
@@ -127,17 +134,21 @@ class DRNA_ResonantBlock(nn.Module):
         """
         Phase information for RoPE as an argument (cos, sin)
         """
-        # Attention：Spiral Projection Layer (A)
-        # QKV -> RoPE -> Norm
-        q, k, v = project_qkv(x, self.qkv, self.n_heads, self.d_head)
+        # --- Attention Path (Pre-Norm) ---
+        # Normalize -> QKV -> RoPE -> Residual Add
+        residual = x
+        x_norm = self.norm1(x)
+        
+        q, k, v = project_qkv(x_norm, self.qkv, self.n_heads, self.d_head)
         q, k = apply_rope(q, k, cos, sin)
         
         attn_out = attention(q, k, v)
-        x = self.norm1(x + self.out(attn_out)) # Synchronization with context
+        x = residual + self.out(attn_out) 
 
-        # MLP：Spiral Memory Layer (B)
-        # MLP -> Norm
-        x = self.norm2(x + self.mlp(x)) # Determined by memory
+        # --- MLP Path (Pre-Norm) ---
+        # Normalize -> MLP -> Residual Add
+        residual = x
+        x = residual + self.mlp(self.norm2(x)) 
         
         return x
 ```
@@ -146,7 +157,7 @@ class DRNA_ResonantBlock(nn.Module):
 A direct drop‑in replacement is not possible, but it can be utilized through “redefinition and re‑synchronization.”  
 Why it cannot be used as‑is:  
 While a standard Transformer stores information using an “absolute address” (absolute position), D-RNA processes information using the “phase of a spiral” (relative position), meaning the coordinate systems are fundamentally different.  
-Even if the weights are copied directly, the phases do not align and no resonance occurs.  
+Even if the weights are copied directly, the phases do not align and no resonance cannot be induced immediately.  
 How to replace it (implementation):  
 The network’s input–output shapes are fully compatible.  
 By rewriting the existing layers as ResonantBlock and migrating positional information into RoPE’s rotational field, the core upgrade is complete.  
@@ -158,15 +169,12 @@ The previously static knowledge (existing weights) begins to synchronize with th
 
 BPC Comparison Chart  
 
-non-mask  
-<img width="800" height="500" alt="bpc_only" src="https://github.com/user-attachments/assets/36a68185-ebf4-4518-83c0-ccb891d327a4" />
-
 use-mask  
-<img width="800" height="500" alt="bpc_mask" src="https://github.com/user-attachments/assets/3e54dcd9-b143-4fbe-a670-91005d2acecf" />
+<img width="800" height="500" alt="bpc_prenorm_battle" src="https://github.com/user-attachments/assets/d599d19b-48b7-45e7-aff4-195067823976" />
 
-
-use-mask 10000step
-<img width="800" height="500" alt="bpc_mask_10000" src="https://github.com/user-attachments/assets/cded1de2-aa29-4519-8100-2f2d35c5d8b2" />  
+use-mask 5000step
+<img width="800" height="500" alt="bpc_prenorm_battle_5000" src="https://github.com/user-attachments/assets/7941f635-b0a7-471d-819f-76c9d55a5bc7" />
+ 
 
 Learning Test Status (Details)  
 Model Scale: Dimension (d_model): 256, Layers (n_layers): 16, Heads (n_heads): 8  
@@ -185,9 +193,9 @@ Expansion of Information Capacity within the same computational budget
 
 | Metric                 | Normal Transformer | D-RNA Transformer | Difference / Efficiency      |  
 |------------------------|--------------------|-------------------|------------------------------|  
-| Steps to Reach Target  | 3,850 steps        | 2,600 steps       | ~32.5% reduction             |  
-| Time Required          | 1359.8 sec         | 964.5 sec         | ~29.1% faster                |  
-| VRAM Usage             | 4.49 GB            | 5.02 GB           | +0.53 GB (Structural cost)   |  
+| Steps to Reach Target  | 3,850 steps        | 2,350 steps       | ~39.0% reduction             |  
+| Time Required          | 1365.4 sec         | 876.1 sec         | ~35.8% faster                |  
+| VRAM Usage             | 4.51 GB            | 5.05 GB           | +0.54 GB cost   |  
 
 ---
 

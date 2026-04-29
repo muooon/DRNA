@@ -1,4 +1,5 @@
 # D‑RNA：Dual‑Helix Resonance Neural Architecture (DRNA)  
+### Pre-Norm Edition  
 
 ⭐ このプロジェクトが気に入ったら"星"を付けてください ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
@@ -77,14 +78,19 @@ class ResonantBlock(nn.Module):
         self.d_head = dim // n_heads
 
     def forward(self, x, cos, sin):
-        # --- Attention ---
-        q, k, v = project_qkv(x, self.qkv, self.n_heads, self.d_head)
+        # --- Attention Path (Pre-Norm) ---
+        residual = x
+        x_norm = self.norm1(x)  # 演算の前にNormを適用
+        
+        q, k, v = project_qkv(x_norm, self.qkv, self.n_heads, self.d_head)
         q, k = apply_rope(q, k, cos, sin)
         attn_out = attention(q, k, v)
-        x = self.norm1(x + self.out(attn_out))
+        x = residual + self.out(attn_out)
 
-        # --- MLP ---
-        x = self.norm2(x + self.mlp(x))
+        # --- MLP Path (Pre-Norm) ---
+        residual = x
+        x = residual + self.mlp(self.norm2(x))  # 演算の前にNormを適用
+        
         return x
 ```
 
@@ -97,6 +103,7 @@ class DRNA_ResonantBlock(nn.Module):
     """
     既存の TransformerBlock をこの ResonantBlock に置き換える
     I/O: [Batch, Seq, Dim] -> [Batch, Seq, Dim] (完全互換)
+    アーキテクチャ：プレ・ノーム (深層ネットワークにおける安定性優先)
     """
     def __init__(self, dim, n_heads, mlp_dim_forward=None):
         super().__init__()
@@ -123,17 +130,23 @@ class DRNA_ResonantBlock(nn.Module):
         """
         引数に RoPE 用の位相情報 (cos, sin) を追加するのが唯一の違い
         """
+        # --- Attention Path (Pre-Norm) ---
+        # 正規化 -> QKV -> RoPE -> 残余加算
+        residual = x
+        x_norm = self.norm1(x)
+        
         # --- らせんA: 文脈の共鳴 (Attention) ---
         # QKV 抽出 -> RoPE 回転 -> 収縮(Norm)
-        q, k, v = project_qkv(x, self.qkv, self.n_heads, self.d_head)
+        q, k, v = project_qkv(x_norm, self.qkv, self.n_heads, self.d_head)
         q, k = apply_rope(q, k, cos, sin)
         
         attn_out = attention(q, k, v)
-        x = self.norm1(x + self.out(attn_out)) # 文脈との同期
+        x = residual + self.out(attn_out) # 文脈との同期
 
         # --- らせんB: 記憶の共鳴 (MLP) ---
-        # 知識の照会 -> 収縮(Norm)
-        x = self.norm2(x + self.mlp(x)) # 記憶による確定
+        #  正規化 -> MLP -> 残余加算
+        residual = x
+        x = residual + self.mlp(self.norm2(x)) # 記憶による確定
         
         return x
 ```
@@ -151,20 +164,17 @@ class DRNA_ResonantBlock(nn.Module):
 
 BPC Comparison Chart  
 
-non-mask  
-<img width="800" height="500" alt="bpc_only" src="https://github.com/user-attachments/assets/36a68185-ebf4-4518-83c0-ccb891d327a4" />
-
 use-mask  
-<img width="800" height="500" alt="bpc_mask" src="https://github.com/user-attachments/assets/3e54dcd9-b143-4fbe-a670-91005d2acecf" />
+<img width="800" height="500" alt="bpc_prenorm_battle" src="https://github.com/user-attachments/assets/d599d19b-48b7-45e7-aff4-195067823976" />
 
-
-use-mask 10000step
-<img width="800" height="500" alt="bpc_mask_10000" src="https://github.com/user-attachments/assets/cded1de2-aa29-4519-8100-2f2d35c5d8b2" />  
+use-mask 5000step
+<img width="800" height="500" alt="bpc_prenorm_battle_5000" src="https://github.com/user-attachments/assets/7941f635-b0a7-471d-819f-76c9d55a5bc7" />
+ 
 
 学習テスト状況(詳細)  
 モデル規模：次元数(d_model)：256、レイヤ数(n_layers)：16、ヘッド数(n_heads)：8  
 データセット：enwik8(100MB)  
-学習設定：ステップ数：10,000、バッチサイズ：16、シーケンス長：512、AdamW(LR：1e-4)  
+学習設定：ステップ数：5,000、バッチサイズ：16、シーケンス長：512、AdamW(LR：1e-4)  
 
 学習結果解析(概要)  
 学習効率(Training Efficiency)：30%向上(ステップ効率：約1.5倍)  
@@ -178,9 +188,9 @@ use-mask 10000step
 
 | 指標           | Normal Transformer | D-RNA Transformer | 差分 / 効率                 |  
 |----------------|--------------------|-------------------|------------------------------|  
-| 到達Step数     | 3,850 step         | 2,600 step        | 約 32.5% の削減              |  
-| 所要時間       | 1359.8 sec         | 964.5 sec         | 約 29.1% の高速化            |  
-| VRAM使用量     | 4.49 GB            | 5.02 GB           | +0.53 GB (構造的コスト)      |  
+| 到達Step数     | 3,850 step         | 2,350 step        | 約 39.0% 削減              |  
+| 所要時間       | 1365.4 sec         | 876.1 sec         | 約 35.8% 高速化            |  
+| VRAM使用量     | 4.51 GB            | 5.05 GB           | +0.54 GB コスト増      |  
 
 ---
 

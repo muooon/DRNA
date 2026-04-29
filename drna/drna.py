@@ -4,12 +4,12 @@ import torch.nn.functional as F
 import math
 
 '''
-D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260422
+D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260422 【Pre-Norm版】
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
-螺旋の同期: Attention(文脈の回想)とMLP(知識の定着)を直列に配置し、情報を一段ずつ絞り込む
-位相の保持: RoPE(Rotary Positional Embedding)を回転場として利用し、相対位置を保つ
-高密度圧縮: Post-Norm構造により、各らせんの出力直後に情報を収縮させ、意味を確定させる
+螺旋の同期: Attention(文脈の回想)とMLP(知識の定着)を直列に配置し RoPE で情報を同期
+位相の保持: RoPE(Phase Field)を回転場として利用し、安定した相対位置を保ち早期収束を両立
+高密度圧縮: Pre-Norm により、各らせんを安定的に収縮させ、全結合により記憶を定着させる
 '''
 
 class DRNA_RoPE(nn.Module):
@@ -34,18 +34,19 @@ def apply_drna_rope(q, k, cos, sin):
     return (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k) * sin)
 
 class DRNA_Block(nn.Module):
-    """DRNA共鳴ブロック：元設計に忠実な直列共鳴構造"""
+    """DRNA共鳴ブロック：安定性を高めたPre-Norm直列共鳴構造"""
     def __init__(self, d_model, n_heads, d_ff=None, dropout=0.1):
         super().__init__()
         self.n_heads = n_heads
         self.d_head = d_model // n_heads
         
         # らせんA: 回想系 (Attention)
+        self.norm1 = nn.LayerNorm(d_model) # 演算の前に配置
         self.qkv = nn.Linear(d_model, d_model * 3)
         self.out_proj = nn.Linear(d_model, d_model)
-        self.norm1 = nn.LayerNorm(d_model)
         
         # らせんB: 記憶系 (MLP)
+        self.norm2 = nn.LayerNorm(d_model) # 演算の前に配置
         d_ff = d_ff or d_model * 4
         self.mlp = nn.Sequential(
             nn.Linear(d_model, d_ff),
@@ -53,41 +54,41 @@ class DRNA_Block(nn.Module):
             nn.Dropout(dropout),
             nn.Linear(d_ff, d_model)
         )
-        self.norm2 = nn.LayerNorm(d_model)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, cos, sin, mask=None):
         b, s, d = x.shape
         
-        # --- らせんA (Attention Resonance) ---
-        qkv = self.qkv(x).reshape(b, s, 3, self.n_heads, self.d_head).permute(2, 0, 3, 1, 4)
+        # --- らせんA (Attention Resonance: Pre-Norm) ---
+        residual = x
+        x_norm = self.norm1(x) # 先にNormを計算
+        
+        qkv = self.qkv(x_norm).reshape(b, s, 3, self.n_heads, self.d_head).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
         
         q, k = apply_drna_rope(q, k, cos, sin)
         
-        # Scaled Dot-Product Attention
         attn = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.d_head))
-        
-        # マスク適用（ブロードキャスト対応）
         if mask is not None:
-            # mask形状: (s, s) 又は (b, n_heads, s, s) 等に対応可能
             attn = attn + mask
         
         attn = F.softmax(attn, dim=-1)
-        
         a_out = (attn @ v).transpose(1, 2).reshape(b, s, d)
         
-        # 収縮統合1
-        x = self.norm1(x + self.dropout(self.out_proj(a_out)))
+        # 残差接続（収縮ではなく蓄積）
+        x = residual + self.dropout(self.out_proj(a_out))
         
-        # --- らせんB (MLP Resonance) ---
-        # 収縮統合2
-        x = self.norm2(x + self.dropout(self.mlp(x)))
+        # --- らせんB (MLP Resonance: Pre-Norm) ---
+        residual = x
+        x_norm = self.norm2(x) # 先にNormを計算
+        
+        # 残差接続
+        x = residual + self.dropout(self.mlp(x_norm))
         
         return x
 
 class DRNA_Model(nn.Module):
-    """汎用 DRNA モデルコンテナ"""
+    """汎用 DRNA モデルコンテナ（安定化 Pre-Norm 版）"""
     def __init__(self, vocab_size, d_model=256, n_layers=16, n_heads=8, d_ff=1024):
         super().__init__()
         self.embed = nn.Embedding(vocab_size, d_model)
@@ -97,28 +98,26 @@ class DRNA_Model(nn.Module):
             DRNA_Block(d_model, n_heads, d_ff) for _ in range(n_layers)
         ])
         
+        # Pre-Norm構造の場合、最終レイヤーの後に全体のNormを置くのが一般的
+        self.final_norm = nn.LayerNorm(d_model)
         self.output_head = nn.Linear(d_model, vocab_size)
 
     def forward(self, x, mask=None):
         b, s = x.shape
 
-        # もし外部からマスクが与えられず、かつGPT的な動作をさせたい場合
-        # ここでは「汎用GPT型」として、デフォルトで因果マスクを生成するようにします
         if mask is None:
-            # 未来を隠すマスク (右上三角形が-inf)
-            # 形状: (s, s)
             mask = torch.triu(torch.ones(s, s, device=x.device) * float('-inf'), diagonal=1)
 
         cos, sin = self.rope(x, x.size(1))
         x = self.embed(x)
         
         for layer in self.layers:
-            # 各層に共通のマスクを伝播
             x = layer(x, cos, sin, mask=mask)
             
+        x = self.final_norm(x) # 出力前の最終同期
         return self.output_head(x)
 
 '''
-汎用型 D-RNA コード License: Apache License 2.0
+汎用型 D-RNA (Pre-Norm) License: Apache License 2.0
 https://github.com/muooon/DRNA
 '''
