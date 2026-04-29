@@ -199,6 +199,20 @@ Expansion of Information Capacity within the same computational budget
 
 ---
 
+New Perspective: Digital Vector × Phase Distance  
+
+D-RNA can achieve high-resolution approximation even in low-bit environments (e.g., 1.58-bit / Ternary weights).  
+
+Discrete Vectors: Each layer handles discrete, "digital" 3-value vectors (-1, 0, 1).  
+
+<img width="800" height="400" alt="smooth" src="https://github.com/user-attachments/assets/69efc1cd-e13b-400f-a188-b886eb642f26" />
+
+Continuous Distance: By stacking layers with different phases (Double Helix), these discrete "jagged" representations are superimposed to form a smooth, continuous curve.  
+
+This allows the model to reconstruct high-precision "meaning-distances" through wave interference, much like how a Fourier series reconstructs smooth waves from simple components. It enables handheld devices to run large-scale models with the perceptual accuracy of high-bit floating-point math.  
+
+---
+
 License：  
 This project is licensed under the Apache License 2.0. (See the LICENSE for details).  
 
