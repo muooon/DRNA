@@ -170,7 +170,9 @@ The previously static knowledge (existing weights) begins to synchronize with th
 
 ---
 
-BPC Comparison Chart  
+## BPC Comparison Chart  
+
+||| Phase 1: Pure Structural Comparison (Same Number of Layers: 16L vs. 16L) |||
 
 use-mask  
 <img width="800" height="500" alt="bpc_prenorm_battle" src="https://github.com/user-attachments/assets/d599d19b-48b7-45e7-aff4-195067823976" />
@@ -179,26 +181,64 @@ use-mask 5000step
 <img width="800" height="500" alt="bpc_prenorm_battle_5000" src="https://github.com/user-attachments/assets/7941f635-b0a7-471d-819f-76c9d55a5bc7" />
  
 
-Learning Test Status (Details)  
+Learning Test Status (Details):  
 Model Scale: Dimension (d_model): 256, Layers (n_layers): 16, Heads (n_heads): 8  
 Dataset: enwik8 (100MB)  
-Training Settings: Steps: 10,000, Batch Size: 16, Sequence Length: 512, AdamW (LR: 1e-4)  
+Training Settings: Steps: 5,000, Batch Size: 16, Sequence Length: 512, AdamW (LR: 1e-4)  
 
-Training Result Analysis (Overview)  
+Training Result Analysis (Overview):  
 Training Efficiency: 30% improvement (Step efficiency: approx. 1.5x)  
 Convergence Speed: 30% reduction in time cost (Convergence rate accelerated by 1.5x)  
 
-Observed Benefits from Testing (Summary)  
+Observed Benefits from Testing (Summary):  
 Optimization of Parameter Density  
 Structural advantage in convergence characteristics  
 Expansion of Information Capacity within the same computational budget  
-※ D-RNA evolves relative to the Transformer by utilizing phase synchronization via its helical structure, incurring only minimal internal costs optimization.  
+※ D-RNA evolves relative to the Transformer by utilizing phase synchronization via its helical structure, incurring only minimal internal computational overhead.  
 
 | Metric                 | Normal Transformer | D-RNA Transformer | Difference / Efficiency      |  
 |------------------------|--------------------|-------------------|------------------------------|  
 | Steps to Reach Target  | 3,850 steps        | 2,350 steps       | ~39.0% reduction             |  
 | Time Required          | 1365.4 sec         | 876.1 sec         | ~35.8% faster                |  
 | VRAM Usage             | 4.51 GB            | 5.05 GB           | +0.54 GB cost   |  
+
+
+||| Phase 2: Implementation of Optimization (Reducing the Number of Layers by Half: 16L vs. 8L) |||
+
+use-mask 5000step  
+<img width="800" height="500" alt="bpc_prenorm_battle_5000xcos" src="https://github.com/user-attachments/assets/8a75106e-65c5-4e2b-b842-39d0b92a1a00" />
+
+use-mask 10000step  
+<img width="800" height="500" alt="bpc_prenorm_battle_10000xcos" src="https://github.com/user-attachments/assets/f137956d-e2e3-4c83-9bb8-5be1009c4000" />  
+
+Learning Test Status (Details):  
+Model Scale: Dimension (d_model): 256, Layers (n_layers): 16 / 8(D-RNA), Heads (n_heads): 8  
+Dataset: enwik8 (100MB)  
+Training Settings: Steps: 10,000, Batch Size: 16, Sequence Length: 512, AdamW (LR: 1e-4), CosineAnnealing   
+
+Training Result Analysis (Overview):  
+Training Efficiency: 30% improvement (Step efficiency: approx. 1.5x)  
+※ A reduction of up to approximately 60% in the time required to reach the same level of Perplexity (around BPC 2.05) was observed.  
+Convergence Speed: 30% reduction in time cost (Convergence rate accelerated by 1.5x)  
+※ By reducing the number of physical layers (from 16L to 8L) and employing a spiral structure (phase synchronization), we have achieved both optimization of parameter density and increased processing speed.  
+
+Observed Benefits from Testing (Summary):  
+Optimization of Parameter Density  
+Structural advantage in convergence characteristics  
+Expansion of Information Capacity within the same computational budget  
+※ D-RNA evolves relative to the Transformer by utilizing phase synchronization via its helical structure, incurring only minimal internal computational overhead.  
+
+| Metric                 | Normal Transformer | D-RNA Transformer | Difference / Efficiency      |  
+|------------------------|--------------------|-------------------|------------------------------|  
+| Steps to Reach Target  | 4,800 steps        | 3,650 steps       | ~24.0% reduction       |  
+| Time Required          | 1685.5 sec         | 682.9 sec         | ~60.0% faster          |  
+| VRAM Usage             | 4.29 GB            | 2.56 GB           | ~40.0% reduction  |  
+| Final BPC       | 1.9027          | 1.8958          | Higher accuracy per layer     |  
+| Final step time     | 3,510.7 sec         | 1,874.2 sec        | ~47% reduction      |    
+
+Basic Architecture Specifications:  
+Transformer   Absolute(Learned)   ReLU  
+D-RNA   RoPE(Rotary)   GELU  
 
 ---
 
@@ -224,4 +264,4 @@ This work builds upon the foundation established by the Transformer architecture
 I would like to express my gratitude to the researchers and open-source communities
 whose contributions to attention mechanisms, positional encoding, and large-scale
 model design made this work possible.  
-Neocognitron―Transformer―D-RNA dream goes on...  
+Neocognitron ― Transformer ― Dream Resonance Never Adjourns. goes on...  
