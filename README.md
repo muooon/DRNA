@@ -217,7 +217,7 @@ use-mask 5000step
 <img width="800" height="500" alt="bpc_prenorm_battle_5000xcos" src="https://github.com/user-attachments/assets/8a75106e-65c5-4e2b-b842-39d0b92a1a00" />
 
 use-mask 10000step  
-<img width="800" height="500" alt="bpc_prenorm_battle_10000xcos" src="https://github.com/user-attachments/assets/f137956d-e2e3-4c83-9bb8-5be1009c4000" />  
+<img width="800" height="500" alt="bpc_prenorm_battle_10000xcosGeLU" src="https://github.com/user-attachments/assets/0e3d2f9e-5507-4ec2-9349-deb4d47cfbe5" />  
 
 Learning Test Status (Details):  
 Model Scale: Dimension (d_model): 256, Layers (n_layers): 16 / 8(D-RNA), Heads (n_heads): 8  
@@ -238,14 +238,14 @@ Expansion of Information Capacity within the same computational budget
 
 | Metric                 | Normal Transformer | D-RNA Transformer | Difference / Efficiency      |  
 |------------------------|--------------------|-------------------|------------------------------|  
-| Steps to Reach Target  | 4,800 steps        | 3,650 steps       | ~24.0% reduction       |  
-| Time Required          | 1685.5 sec         | 682.9 sec         | ~60.0% faster          |  
-| VRAM Usage             | 4.29 GB            | 2.56 GB           | ~40.0% reduction  |  
-| Final BPC       | 1.9027          | 1.8958          | Higher accuracy per layer     |  
-| Final step time     | 3,510.7 sec         | 1,874.2 sec        | ~47% reduction      |    
+| Steps to Reach Target  | 4,650 steps        | 3,650 steps       | ~21.0% reduction       |  
+| Time Required          | 1641.5 sec         | 685.2 sec         | ~58.0% faster          |  
+| VRAM Usage             | 4.79 GB            | 2.56 GB           | ~46.0% reduction  |  
+| Final BPC       | 1.9272          | 1.8958          | Higher accuracy per layer     |  
+| Final step time     | 3,542.2 sec         | 1,876.8 sec        | ~53.0% reduction      |    
 
 Basic Architecture Specifications:  
-Transformer   Absolute(Learned)   ReLU  
+Transformer   Absolute(Learned)   GELU  
 D-RNA   RoPE(Rotary)   GELU  
 
 ---

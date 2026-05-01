@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import math
 
 '''
-D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260422 【Pre-Norm版】
+D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) 260501 【Pre-Norm版】
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
 螺旋の同期: Attention(文脈の回想)とMLP(知識の定着)を直列に配置し RoPE で情報を同期
@@ -14,23 +14,24 @@ Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造
 
 class DRNA_RoPE(nn.Module):
     """二重らせんの位相を決定する回転場"""
-    def __init__(self, d_model, base=10000):
+    def __init__(self, d_head, base=10000):
         super().__init__()
-        inv_freq = 1.0 / (base ** (torch.arange(0, d_model, 2).float() / d_model))
+        inv_freq = 1.0 / (base ** (torch.arange(0, d_head, 2).float() / d_head))
         self.register_buffer("inv_freq", inv_freq)
 
     def forward(self, x, seq_len):
         t = torch.arange(seq_len, device=x.device).type_as(self.inv_freq)
         freqs = torch.einsum("i,j->ij", t, self.inv_freq)
         emb = torch.cat((freqs, freqs), dim=-1)
-        return emb.cos()[None, :, :], emb.sin()[None, :, :]
+        return emb.cos()[None, None, :, :], emb.sin()[None, None, :, :]
 
 def apply_drna_rope(q, k, cos, sin):
     """位相回転の適用"""
     def rotate_half(x):
         x1, x2 = x.chunk(2, dim=-1)
         return torch.cat((-x2, x1), dim=-1)
-    cos, sin = cos[:, None, :, :], sin[:, None, :, :]
+    # DRNA_RoPE側で次元を揃えたので、ここの cos[:, None, :, :] は不要になる
+    # q, k は [Batch, Head, Seq, d_head] なので、cos, sin もそれに合わせた
     return (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k) * sin)
 
 class DRNA_Block(nn.Module):
@@ -50,7 +51,7 @@ class DRNA_Block(nn.Module):
         d_ff = d_ff or d_model * 4
         self.mlp = nn.Sequential(
             nn.Linear(d_model, d_ff),
-            nn.GELU(),
+            nn.GELU(), # VRAM抑制は ReLU (別レイヤの干渉で0勾配にならない｢可能性｣あり)
             nn.Dropout(dropout),
             nn.Linear(d_ff, d_model)
         )
@@ -106,7 +107,8 @@ class DRNA_Model(nn.Module):
         b, s = x.shape
 
         if mask is None:
-            mask = torch.triu(torch.ones(s, s, device=x.device) * float('-inf'), diagonal=1)
+            mask = torch.triu(torch.ones(s, s, device=x.device), diagonal=1) * float('-inf')
+            mask = mask[None, None, :, :] # (1, 1, seq_len, seq_len) に拡張
 
         cos, sin = self.rope(x, x.size(1))
         x = self.embed(x)

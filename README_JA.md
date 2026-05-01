@@ -212,7 +212,7 @@ use-mask 5000step
 <img width="800" height="500" alt="bpc_prenorm_battle_5000xcos" src="https://github.com/user-attachments/assets/8a75106e-65c5-4e2b-b842-39d0b92a1a00" />
 
 use-mask 10000step  
-<img width="800" height="500" alt="bpc_prenorm_battle_10000xcos" src="https://github.com/user-attachments/assets/f137956d-e2e3-4c83-9bb8-5be1009c4000" />  
+<img width="800" height="500" alt="bpc_prenorm_battle_10000xcosGeLU" src="https://github.com/user-attachments/assets/0e3d2f9e-5507-4ec2-9349-deb4d47cfbe5" />  
 
 学習テスト状況(詳細)：  
 モデル規模：次元数(d_model)：256、レイヤ数(n_layers)：16 / 8(D-RNA)、ヘッド数(n_heads)：8  
@@ -233,15 +233,15 @@ use-mask 10000step
 
 | 指標           | Normal Transformer 16 | D-RNA Transformer 8 | 差分 / 効率                 |  
 |----------------|--------------------|-------------------|------------------------------|  
-| 到達Step数     | 4,800 step         | 3,650 step        | 約 24.0% 削減              |  
-| 所要時間       | 1685.5 sec         | 682.9 sec         | 約 60.0% 高速化            |  
-| VRAM使用量     | 4.29 GB            | 2.56 GB           | 約 40% 削減      |  
-| 最終BPC       | 1.9027          | 1.8958          | 同等(レイヤあたり精度向上)        |  
-| 最終step時間     | 3,510.7 sec         | 1,874.2 sec        | 約 47% 短縮      |  
+| 到達Step数     | 4,650 step         | 3,650 step        | 約 21.0% 削減              |  
+| 所要時間       | 1641.5 sec         | 682.9 sec         | 約 58.0% 高速化            |  
+| VRAM使用量     | 4.79 GB            | 2.56 GB           | 約 46% 削減      |  
+| 最終BPC       | 1.9272          | 1.8958          | 同等(レイヤあたり精度向上)        |  
+| 最終step時間     | 3,542.2 sec         | 1,876.8 sec        | 約 53.0% 短縮      |  
 
 
 基本アーキテクチャ仕様：  
-Transformer   Absolute(Learned)   ReLU  
+Transformer   Absolute(Learned)   GELU  
 D-RNA   RoPE(Rotary)   GELU
 
 ---
