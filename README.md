@@ -3,6 +3,7 @@
 
 ### Attention is all you need_started,  
 ### Resonance is all you need_endure,  
+### Neocognitron ― Transformer ― Dream Resonance Never Adjourns — it goes on...  
 
 ⭐ If you like this project, please give it a star ⭐  
 readme：[English](README.md) | [日本語](README_JA.md)  
@@ -12,6 +13,13 @@ D-RNA is a new neural architecture centered on a dual helix structure and a rota
 In this architecture, Attention and MLP are synchronized into a dual helix, and information is holographically compressed through Resonant Contraction.  
 This method rearranges sparse representations into dense ones to achieve high expressiveness using the depth‑direction structure alone, without increasing the number of dimensions.  
 A key feature of this approach is its ability to preserve the full connectivity of the Transformer architecture while suppressing catastrophic forgetting and retaining subtle fluctuations and phase information.  
+
+---
+
+### Explanation  
+High‑Density Transformer and Fast Convergence via Dual‑Helix Resonant Contraction Architecture (D‑RNA)  
+
+#### [D-RNA-paper(article)](https://huggingface.co/muooon/DRNA/raw/main/D%E2%80%91RNA_paper_260501(ENG).txt) 
 
 ---
 
@@ -256,7 +264,7 @@ This allows the model to reconstruct high-precision "meaning-distances" through 
 
 ---
 
-License：  
+#### License：  
 This project is licensed under the Apache License 2.0. (See the LICENSE for details).  
 
 #### Acknowledgments：  
@@ -264,4 +272,4 @@ This work builds upon the foundation established by the Transformer architecture
 I would like to express my gratitude to the researchers and open-source communities
 whose contributions to attention mechanisms, positional encoding, and large-scale
 model design made this work possible.  
-Neocognitron ― Transformer ― Dream Resonance Never Adjourns. goes on...  
+Neocognitron ― Transformer ― D‑RNA  Dream Resonance Never Adjourns — it goes on...  
