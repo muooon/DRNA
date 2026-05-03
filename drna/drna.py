@@ -5,7 +5,6 @@ import math
 
 '''
 D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm 版
-260502：変数名を正確化(head_dim)、汎用 mask に変更し padding 等に対応可
 仕様：GELU(Activation)、RoPE(head_dim)、mask(padding + causal)
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
@@ -104,15 +103,28 @@ class DRNA_Model(nn.Module):
         self.final_norm = nn.LayerNorm(d_model)
         self.output_head = nn.Linear(d_model, vocab_size)
 
-    def forward(self, x, mask=None):
+    def forward(self, x, mask=None, pad_id=None):
         b, s = x.shape
+        device = x.device
 
         if mask is None:
-            device = x.device
-            pad_mask = (x != 0).unsqueeze(1).unsqueeze(2)  # (B,1,1,S)
+            # --- 1. pad_mask (pad_id 型チェック) ---
+            # pad_id が整数(int/long)として有効な場合のみ pad_mask を作成
+            if isinstance(pad_id, (int, float, torch.Tensor)):
+                # Tensor の場合はスカラー値に変換
+                p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
+                pad_mask = (x != p_id).unsqueeze(1).unsqueeze(2) # (B,1,1,S)
+            else:
+                # 数値でない場合(None含)は｢全てが有効｣なマスクを作る
+                # これにより enwik8 のようなケースでも正常に動作する
+                pad_mask = torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+
+            # --- 2. causal mask ---
             causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool()
-            causal = causal.unsqueeze(0).unsqueeze(0)      # (1,1,S,S)
-            attn_mask = pad_mask & (~causal)               # (B,1,S,S)
+            causal = causal.unsqueeze(0).unsqueeze(0)   # (1,1,S,S)
+
+            # --- 3. 合成と NaN 対策 ---
+            attn_mask = pad_mask & (~causal)    # (B,1,S,S)
             mask = attn_mask.masked_fill(~attn_mask, float('-inf'))
 
         cos, sin = self.rope(x, x.size(1))
@@ -124,6 +136,14 @@ class DRNA_Model(nn.Module):
         x = self.final_norm(x) # 出力前の最終同期
         return self.output_head(x)
 
+'''
+260503：padding を引数で指定できるよう変更
+    # 例：一般的な Tokenizer の pad_id が 0 の場合
+    output = model(input_ids, pad_id=0)
+    # 例：Hugging Face 等の tokenizer を使っている場合
+    output = model(input_ids, pad_id=tokenizer.pad_token_id)
+260502：変数名を正確化(head_dim)、汎用 mask に変更し padding 等に対応可
+'''
 
 '''
 汎用型 D-RNA (Pre-Norm) License: Apache License 2.0 https://github.com/muooon/DRNA
