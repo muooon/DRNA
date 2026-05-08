@@ -4,14 +4,26 @@ import torch.nn.functional as F
 import math
 
 '''
-D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm 版
-仕様：GELU(Activation)、RoPE(head_dim)、mask(padding + causal)
+D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm･Kv-RoPE 版
+仕様：Pre-Norm(RMSNorm)、GELU(Activation)、Kv-RoPE(head_dim)、mask(padding + causal)
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
 螺旋の同期：Attention(文脈の回想)とMLP(知識の定着)を直列に配置し RoPE で情報を同期
 位相の保持：RoPE(Phase Field)を回転場として利用し、安定した相対位置を保ち早期収束を両立
 高密度圧縮：Pre-Norm により、各らせんを安定的に収縮させ、全結合により記憶を定着させる
 '''
+
+class RMSNorm(nn.Module):
+    def __init__(self, d_model, eps=1e-6):
+        super().__init__()
+        self.eps = eps
+        self.weight = nn.Parameter(torch.ones(d_model))
+
+    def forward(self, x):
+        # 2乗平均の平方根で割る(平均を減算しない･中心化をしない)
+        norm = x.pow(2).mean(-1, keepdim=True)
+        x_normed = x * torch.rsqrt(norm + self.eps)
+        return self.weight * x_normed
 
 class DRNA_RoPE(nn.Module):
     """二重らせんの位相を決定する回転場"""
@@ -27,7 +39,7 @@ class DRNA_RoPE(nn.Module):
         return emb.cos()[None, None, :, :], emb.sin()[None, None, :, :]
 
 def apply_drna_rope(q, k, cos, sin):
-    """位相回転の適用"""
+    """Kによる動的位相変調済み cos/sin を受け取る"""
     def rotate_half(x):
         x1, x2 = x.chunk(2, dim=-1)
         return torch.cat((-x2, x1), dim=-1)
@@ -39,14 +51,14 @@ class DRNA_Block(nn.Module):
         super().__init__()
         self.n_heads = n_heads
         self.head_dim = head_dim
-        
+
         # らせんA: 回想系 (Attention)
-        self.norm1 = nn.LayerNorm(d_model) # 演算の前に配置
+        self.norm1 = RMSNorm(d_model) # 演算の前に配置
         self.qkv = nn.Linear(d_model, d_model * 3)
         self.out_proj = nn.Linear(d_model, d_model)
-        
+
         # らせんB: 記憶系 (MLP)
-        self.norm2 = nn.LayerNorm(d_model) # 演算の前に配置
+        self.norm2 = RMSNorm(d_model) # 演算の前に配置
         d_ff = d_ff or d_model * 4
         self.mlp = nn.Sequential(
             nn.Linear(d_model, d_ff),
@@ -57,58 +69,77 @@ class DRNA_Block(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, cos, sin, mask=None):
-        b, s, d = x.shape
-        
-        # --- らせんA (Attention Resonance: Pre-Norm) ---
-        residual = x
-        x_norm = self.norm1(x) # 先にNormを計算
-        
-        qkv = self.qkv(x_norm).reshape(b, s, 3, self.n_heads, self.head_dim).permute(2, 0, 3, 1, 4)
-        q, k, v = qkv[0], qkv[1], qkv[2]
-        
-        q, k = apply_drna_rope(q, k, cos, sin)
-        
-        attn = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
-        if mask is not None:
-            attn = attn + mask
-        
-        attn = F.softmax(attn, dim=-1)
-        a_out = (attn @ v).transpose(1, 2).reshape(b, s, d)
-        
-        # 残差接続（収縮ではなく蓄積）
-        x = residual + self.dropout(self.out_proj(a_out))
-        
-        # --- らせんB (MLP Resonance: Pre-Norm) ---
-        residual = x
-        x_norm = self.norm2(x) # 先にNormを計算
-        
-        # 残差接続
-        x = residual + self.dropout(self.mlp(x_norm))
-        
-        return x
+            b, s, d = x.shape
+
+            # 1. 共通の残差(ベースとなる螺旋の軸)
+            residual = x
+
+            # 2. らせんA (Attention) 並列方式
+            x_norm1 = self.norm1(x)
+
+            # QKV生成 (3倍のまま)
+            # ※ self.qkv(x_norm) が x_norm1 になっているか確認してください
+            qkv = self.qkv(x_norm1).reshape(b, s, 3, self.n_heads, self.head_dim).permute(2, 0, 3, 1, 4)
+            q, k, v = qkv[0], qkv[1], qkv[2]
+
+            # K因果的動的回転：一つ前の単語の K が今の単語の座標を決める
+            # 自分の情報で自分を回さないよう、Kを1つ未来にシフトさせる
+            # これにより｢赤い(K)｣が｢猫(Q,K)｣の位相を決定する構造になる
+            k_for_phase = torch.cat([torch.zeros_like(k[:, :, :1, :]), k[:, :, :-1, :]], dim=2)
+
+            # Kのエネルギーを位相(回転角)に変換
+            rt_phase = torch.tanh(k_for_phase) * math.pi
+
+            # 静的RoPE (cos, sin) を動的位相 (rt_phase) で加法定理により変調
+            # ※ apply_drna_rope に rt_phase を渡せるように関数側を調整するか、
+            # ここで dynamic_cos / sin を作って渡します
+            d_cos = (cos * torch.cos(rt_phase)) - (sin * torch.sin(rt_phase))
+            d_sin = (sin * torch.cos(rt_phase)) + (cos * torch.sin(rt_phase))
+
+            # ２重らせんをつくる (変調された座標で回転)
+            q, k = apply_drna_rope(q, k, d_cos, d_sin)
+
+            # Attention計算
+            attn = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
+            if mask is not None:
+                attn = attn + mask
+
+            attn = F.softmax(attn, dim=-1)
+            a_out_raw = (attn @ v).transpose(1, 2).reshape(b, s, d)
+            a_out = self.out_proj(a_out_raw)
+
+            # 3. らせんB (MLP)
+            x_norm2 = self.norm2(x)
+            m_out = self.mlp(x_norm2)
+
+            # 4. 並列方式
+            x = residual + self.dropout(a_out) + self.dropout(m_out)
+
+            return x
 
 class DRNA_Model(nn.Module):
-    """汎用 DRNA モデルコンテナ（安定化 Pre-Norm 版）"""
+    """汎用 DRNA モデルコンテナ(安定化 Pre-Norm 版)"""
     def __init__(self, vocab_size, d_model=256, n_layers=16, n_heads=8, d_ff=1024):
         super().__init__()
         self.embed = nn.Embedding(vocab_size, d_model)
         self.head_dim = d_model // n_heads
         self.rope = DRNA_RoPE(self.head_dim)
-        
+
         self.layers = nn.ModuleList([
             DRNA_Block(d_model, n_heads, self.head_dim, d_ff) for _ in range(n_layers)
         ])
-        
+
         # Pre-Norm構造の場合、最終レイヤーの後に全体のNormを置くのが一般的
-        self.final_norm = nn.LayerNorm(d_model)
+        self.final_norm = RMSNorm(d_model)
         self.output_head = nn.Linear(d_model, vocab_size)
 
     def forward(self, x, mask=None, pad_id=None):
         b, s = x.shape
         device = x.device
+        x = self.embed(x)
 
         if mask is None:
-            # --- 1. pad_mask (pad_id 型チェック) ---
+            # 1. pad_mask (pad_id 型チェック)
             # pad_id が整数(int/long)として有効な場合のみ pad_mask を作成
             if isinstance(pad_id, (int, float, torch.Tensor)):
                 # Tensor の場合はスカラー値に変換
@@ -119,16 +150,18 @@ class DRNA_Model(nn.Module):
                 # これにより enwik8 のようなケースでも正常に動作する
                 pad_mask = torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
 
-            # --- 2. causal mask ---
+            # 2. causal mask
             causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool()
             causal = causal.unsqueeze(0).unsqueeze(0)   # (1,1,S,S)
 
-            # --- 3. 合成と NaN 対策 ---
+            # 3. 合成と NaN 対策
             attn_mask = pad_mask & (~causal)    # (B,1,S,S)
-            mask = attn_mask.masked_fill(~attn_mask, float('-inf'))
+            #mask = attn_mask.masked_fill(~attn_mask, float('-inf'))
+            # float('-inf') を、計算精度に合わせた最小値に変更
+            inf_value = torch.finfo(x.dtype).min if x.is_floating_point() else -1e9
+            mask = attn_mask.masked_fill(~attn_mask, inf_value)
 
         cos, sin = self.rope(x, x.size(1))
-        x = self.embed(x)
 
         for layer in self.layers:
             x = layer(x, cos, sin, mask=mask)
@@ -137,6 +170,8 @@ class DRNA_Model(nn.Module):
         return self.output_head(x)
 
 '''
+260507：Kによる回転で文脈に単語を沿わせ２重らせんの干渉による取捨選択とホログラム合成を可能にする
+260505：model構成から学習解像度を自動化、汎用 mask の精度への適正化、RMSNormへの移行
 260503：padding を引数で指定できるよう変更
     # 例：一般的な Tokenizer の pad_id が 0 の場合
     output = model(input_ids, pad_id=0)
