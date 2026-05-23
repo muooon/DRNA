@@ -8,7 +8,7 @@ D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm･Kv-RoPE �
 仕様：Pre-Norm(RMSNorm)、GELU(Activation)、Kv-RoPE(head_dim)、mask(padding + causal)
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
-螺旋の同期：Attention(文脈の回想)とMLP(知識の定着)を直列に配置し RoPE で情報を同期
+螺旋の同期：Attention(文脈の回想)とMLP(知識の定着)を並列配置し RoPE で情報を同期
 位相の保持：RoPE(Phase Field)を回転場として利用し、安定した相対位置を保ち早期収束を両立
 高密度圧縮：Pre-Norm により、各らせんを安定的に収縮させ、全結合により記憶を定着させる
 '''
@@ -136,30 +136,21 @@ class DRNA_Model(nn.Module):
     def forward(self, x, mask=None, pad_id=None):
         b, s = x.shape
         device = x.device
+        inputs = x
         x = self.embed(x)
 
-        if mask is None:
-            # 1. pad_mask (pad_id 型チェック)
+        if mask is None or mask.sum() == 0:
             # pad_id が整数(int/long)として有効な場合のみ pad_mask を作成
-            if isinstance(pad_id, (int, float, torch.Tensor)):
-                # Tensor の場合はスカラー値に変換
-                p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
-                pad_mask = (x != p_id).unsqueeze(1).unsqueeze(2) # (B,1,1,S)
-            else:
-                # 数値でない場合(None含)は｢全てが有効｣なマスクを作る
-                # これにより enwik8 のようなケースでも正常に動作する
-                pad_mask = torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+            # 退避させた inputs を使ってパディングを判定し因果マスクを準備
+            p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
+            pad_mask = (inputs != p_id).unsqueeze(1).unsqueeze(2) if isinstance(p_id, (int, float)) else torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool().unsqueeze(0).unsqueeze(0)
 
-            # 2. causal mask
-            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool()
-            causal = causal.unsqueeze(0).unsqueeze(0)   # (1,1,S,S)
+            # 環境(fp16/32)に応じた最小値を安全に自動計算
+            inf_value = torch.finfo(x.dtype).min if x.dtype != torch.float16 else -65500.0
 
-            # 3. 合成と NaN 対策
-            attn_mask = pad_mask & (~causal)    # (B,1,S,S)
-            #mask = attn_mask.masked_fill(~attn_mask, float('-inf'))
-            # float('-inf') を、計算精度に合わせた最小値に変更
-            inf_value = torch.finfo(x.dtype).min if x.is_floating_point() else -1e9
-            mask = attn_mask.masked_fill(~attn_mask, inf_value)
+            # ゼロ初期化テンソルに無効領域をインプレースで直接埋める(カンニングの完全遮断)
+            mask = torch.zeros((b, 1, s, s), device=device, dtype=x.dtype).masked_fill_(causal | (~pad_mask), inf_value)
 
         cos, sin = self.rope(x, x.size(1))
 
@@ -170,6 +161,7 @@ class DRNA_Model(nn.Module):
         return self.output_head(x)
 
 '''
+260520：maskの微調整(AMP対応)／MoE-LoRA版、vlayer版、D-RNAの活用例を汎用コード化
 260507：Kによる回転で文脈に単語を沿わせ２重らせんの干渉による取捨選択とホログラム合成を可能にする
 260505：model構成から学習解像度を自動化、汎用 mask の精度への適正化、RMSNormへの移行
 260503：padding を引数で指定できるよう変更

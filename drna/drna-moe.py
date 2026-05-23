@@ -6,9 +6,9 @@ import math
 '''
 D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm･Kv-RoPE･MoE‑LoRA 版
 仕様：Pre-Norm(RMSNorm)、GELU(Activation)、Kv-RoPE(head_dim)、mask(padding + causal)
-汎用コードのコア（Base Weight）を不動の岩盤（ランダム初期化・固定）としつつ、
-Attention および MLP の全線形層に LoRA による複数 expert を配置
-入力トークン、あるいはシーケンス特性に応じて動的に Expert を選択・融合する MoE的拡張版
+汎用コードのコア(Base Weight)を不動の岩盤(ランダム初期化・完全固定)としつつ、
+Attention および MLP の全線形層に LoRA による複数 expert を配置する D-RNA 応用型です
+入力トークン、あるいはシーケンス特性に応じて動的に expert を選択・融合する MoE的拡張版
 '''
 
 class RMSNorm(nn.Module):
@@ -51,7 +51,7 @@ class MoELoRALinear(nn.Module):
         self.scaling = lora_alpha / r
         self.num_experts = num_experts
 
-        # 不動の岩盤（ランダム初期化のまま勾配を固定）
+        # 不動の岩盤 (ランダム初期化のまま勾配を固定)
         self.base_weight = nn.Parameter(torch.empty(out_features, in_features), requires_grad=False)
         self.base_bias = nn.Parameter(torch.empty(out_features), requires_grad=False)
         nn.init.kaiming_uniform_(self.base_weight, a=math.sqrt(5))
@@ -66,23 +66,24 @@ class MoELoRALinear(nn.Module):
         self.router = nn.Linear(in_features, num_experts)
 
     def forward(self, x):
-        # 1. 共通のベース出力を計算
+        # 共通のベース出力を計算
         base_out = F.linear(x, self.base_weight, self.base_bias)
 
-        # 2. ルーティング重みの計算 (Softmaxによるソフトな結合、またはTop-kへの拡張も可能)
+        # ルーティング重みの計算 (Softmaxによるソフトな結合、またはTop-kへの拡張も可能)
         # x: (B, S, in_features) -> router_logits: (B, S, num_experts)
         router_logits = self.router(x)
-        router_weights = F.softmax(router_logits, dim=-1) # (B, S, num_experts)
+        router_weights = F.softmax(router_logits, dim=-1).unsqueeze(-1) # (B, S, num_experts)
 
-        # 3. 各ExpertのLoRA出力を加重平均
-        b, s, _ = x.shape
-        lora_out_total = torch.zeros(b, s, self.out_features, device=x.device, dtype=x.dtype)
+        # 全ExpertのLoRA出力をループなしで一斉に並列計算
+        # self.lora_A の形状: (num_experts, r, in_features)
+        lora_A_out = torch.einsum("bsi,ejr->bsej", x, self.lora_A)
 
-        for i in range(self.num_experts):
-            w = router_weights[:, :, i:i+1] # (B, S, 1)
-            # 個別ExpertのLoRA演算
-            lora_out = (x @ self.lora_A[i].t() @ self.lora_B[i].t()) * self.scaling
-            lora_out_total = lora_out_total + (w * lora_out)
+        # self.lora_B の形状: (num_experts, out_features, r)
+        # -> lora_out_all: (B, S, num_experts, out_features)
+        lora_out_all = torch.einsum("bsej,ekj->bsek", lora_A_out, self.lora_B) * self.scaling
+        # ルーターの重みで加重平均して合流
+        # (B, S, num_experts, out_features) * (B, S, num_experts, 1) -> sum over experts
+        lora_out_total = (lora_out_all * router_weights).sum(dim=2)
 
         return base_out + lora_out_total
 
@@ -163,21 +164,21 @@ class DRNA_MoE_Model(nn.Module):
     def forward(self, x, mask=None, pad_id=None):
         b, s = x.shape
         device = x.device
+        inputs = x
         x = self.embed(x)
 
-        if mask is None:
-            if isinstance(pad_id, (int, float, torch.Tensor)):
-                p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
-                pad_mask = (x != p_id).unsqueeze(1).unsqueeze(2)
-            else:
-                pad_mask = torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+        if mask is None or mask.sum() == 0:
+            # 退避させた inputs でパディング位置を判定
+            # パッドマスクとコーザルマスクを判定(pad_idの型チェック＆テンソルバグ修正)
+            p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
+            pad_mask = (inputs != p_id).unsqueeze(1).unsqueeze(2) if isinstance(p_id, (int, float)) else torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool().unsqueeze(0).unsqueeze(0)
 
-            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool()
-            causal = causal.unsqueeze(0).unsqueeze(0)
+            # 環境(fp16/32)に応じた最小値を安全に自動計算
+            inf_value = torch.finfo(x.dtype).min if x.dtype != torch.float16 else -65500.0
 
-            attn_mask = pad_mask & (~causal)
-            inf_value = torch.finfo(x.dtype).min if x.is_floating_point() else -1e9
-            mask = attn_mask.masked_fill(~attn_mask, inf_value)
+            # ゼロ初期化テンソルに無効領域をインプレースで直接埋める(カンニングの完全遮断)
+            mask = torch.zeros((b, 1, s, s), device=device, dtype=x.dtype).masked_fill_(causal | (~pad_mask), inf_value)
 
         cos, sin = self.rope(x, x.size(1))
 
@@ -199,10 +200,23 @@ MoE-LoRAによる多重知性拡張－LoRA形式は高効率な学習と推論�
 完全非公開・秘匿とすることで、情報流出リスクを極小化したクローズド運用も実現可能です
 学習元モデルのみを公開するオープン運用でMoE-LoRAをみんなで自由に作成し機能向上を図ることも可能です
 ---
-マルチモーダル対応：画像･動画･音声などの学習も可能です、トークナイザの差し替えも可能です、
+マルチモーダル対応：画像･動画･音声などの学習も可能です(必要ならトークナイザ等の差し替えも可能です)
 VAEなどの外付けをせず、UTF8 を用いたトークンで 16x16 パッド化などでViT的な学習もできます
 事前学習(プレトレーニング)もLoRAで行うことで高速化効率化を果たします(応答専用LoRAも学習可)
 純粋な古代語LoRAなどをつくることで現代語に浸食されたり現代語を破壊するような干渉も防げます
+'''
+
+'''
+[ 9B D-RNA ランダムベース重み (共通基盤：完全固定) ] (Dim4096/Layer32などを想定)
+         ├──► 【言語LoRA (各国語/英語)】 ────► 日常対話・創造的執筆
+         ├──► 【視覚パッチLoRA (512px)】 ────► 画像認識・マルチモーダル
+         ├──► 【時間補間LoRA (fps拡張)】 ──► 滑らかな動画生成
+         ├──► 【超解像LoRA (4K拡大)】 ────► 究極のディテール補間
+         └──► 【聴覚パッチLoRA (音声波形)】 ─► 音声認識
+画像：512px生成(主題と背景と物体等の対応関係)─►アップスケール(局所超解像MoE-LoRA)
+動画：512px生成(8fps)─►フレーム補間(60fps)─►空間アップスケール(4K超解像)
+このように位置関係LoRA、精細化LoRA、動体追従LoRA、などを付け足すだけで拡張可能です
+言語も種類問わず、プログラム言語専用、国や地域の固有のもの、歴史的なもの、を干渉防止で学習可能です
 '''
 
 '''

@@ -119,21 +119,21 @@ class DRNA_Recurrent_Model(nn.Module):
     def forward(self, x, mask=None, pad_id=None):
         b, s = x.shape
         device = x.device
+        inputs = x
         x = self.embed(x)
 
         if mask is None or mask.sum() == 0:
-            if isinstance(pad_id, (int, float, torch.Tensor)):
-                p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
-                pad_mask = (x != p_id).unsqueeze(1).unsqueeze(2)
-            else:
-                pad_mask = torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+            # 退避させた inputs でパディング位置を判定
+            # パッドマスクとコーザルマスクを判定(pad_idの型チェック＆テンソルバグ修正)
+            p_id = pad_id.item() if isinstance(pad_id, torch.Tensor) else pad_id
+            pad_mask = (inputs != p_id).unsqueeze(1).unsqueeze(2) if isinstance(p_id, (int, float)) else torch.ones((1, 1, 1, s), device=device, dtype=torch.bool)
+            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool().unsqueeze(0).unsqueeze(0)
 
-            causal = torch.triu(torch.ones(s, s, device=device), diagonal=1).bool()
-            causal = causal.unsqueeze(0).unsqueeze(0)
+            # 環境(fp16/32)に応じた最小値を安全に自動計算
+            inf_value = torch.finfo(x.dtype).min if x.dtype != torch.float16 else -65500.0
 
-            attn_mask = pad_mask & (~causal)
-            inf_value = torch.finfo(x.dtype).min if x.is_floating_point() else -1e9
-            mask = attn_mask.masked_fill(~attn_mask, inf_value)
+            # ゼロ初期化テンソルに無効領域をインプレースで直接埋める(カンニングの完全遮断)
+            mask = torch.zeros((b, 1, s, s), device=device, dtype=x.dtype).masked_fill_(causal | (~pad_mask), inf_value)
 
         cos, sin = self.rope(x, x.size(1))
 
@@ -142,6 +142,9 @@ class DRNA_Recurrent_Model(nn.Module):
             # 🌀 仮想レイヤーの再帰ループ
             for _ in range(self.p_layers):
                 if self.training:
+                    # 確実に勾配追跡を有効化するため、x のrequires_gradを確認・保障
+                    if not x.requires_grad:
+                        x.requires_grad_()
                     # グラディエント・チェックポインティングによるVRAM抑制
                     x = checkpoint.checkpoint(
                         layer,
