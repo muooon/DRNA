@@ -8,9 +8,10 @@ D‑RNA: Dual‑Helix Resonance Neural Architecture (DRNA) Pre-Norm･Kv-RoPE �
 仕様：Pre-Norm(RMSNorm)、GELU(Activation)、Kv-RoPE(head_dim)、mask(padding + causal)
 Transformerの全接続性を継承しつつ、二重らせん(Dual-Helix)構造による
 ｢共鳴収縮｣(Resonant Contraction)を物理的に再現したニューラルアーキテクチャです
-螺旋の同期：Attention(文脈の回想)とMLP(知識の定着)を並列配置し RoPE で情報を同期
-位相の保持：RoPE(Phase Field)を回転場として利用し、安定した相対位置を保ち早期収束を両立
-高密度圧縮：Pre-Norm により、各らせんを安定的に収縮させ、全結合により記憶を定着させる
+D-RNA の位相設計と Trio Induction system により３値学習を STE に頼らず安定的に行えます
+これは STE で機能しない optimiser などを３値学習へ活用できるようになります
+将来的に３値モデルを位相差の重ねによる疑似重みをつくり、これを学習対象にして３値学習もおこなえるはずです
+つまり学習元も３値モデルにできるはずです、推論も学習も３値で済むようになる最初の１歩です
 '''
 
 # 3値誘導制御コア(モデルの書き換え、3値ブレンド、ペナルティ計算、結晶化)
@@ -291,7 +292,7 @@ class DRNA_Model(nn.Module):
         return self.output_head(x)
 
 '''
-260528：３値モデル(-、0、+)学習対応／活用例"D-RNA-Trio"版を追加
+260528：３値モデル(-、0、+)学習対応／活用例"D-RNA-Trio"版を追加(Trio Induction)
 260520：maskの微調整(AMP対応)／MoE-LoRA版、vlayer版、D-RNAの活用例を汎用コード化
 '''
 
