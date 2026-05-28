@@ -76,19 +76,24 @@ class TernaryTrainingManager:
                     # 拡張性：LLMの生命線である「embed」と「output_head」は絶対に3値化しない
                     if "embed" in name or "output_head" in name:
                         continue
-                    if not hasattr(module, "raw_weight"):
+                    # raw_weight があればそっちを本体として使う
+                    if hasattr(module, "raw_weight"):
+                        param = module.raw_weight
+                    else:
                         param = module.weight
                     # 学習中と同じ写像：tanh(3w) で soft 3値ターゲットを作る
                     soft = torch.tanh(param * 3.0)
-                    # soft を hard 3値に潰す(しきい値は好みで調整可)
+                    # soft を hard 3値に潰す
                     ternary = torch.zeros_like(soft)
                     ternary[soft >  0.08] =  1.0
                     ternary[soft < -0.08] = -1.0
-                    # 最終的に実数パラメータ自体を3値に上書きして完全固定
-                    module.raw_weight.copy_(ternary_weight)
-                    module.weight.copy_(ternary_weight)
+                    # 実数パラメータ自体を3値に上書きして完全固定
+                    if hasattr(module, "raw_weight"):
+                        module.raw_weight.copy_(ternary)
+                    module.weight.copy_(ternary)
 
         return self.model
+
 
 # 3値誘導外付けフックシステム(2次元重みを3値ブレンド）
 def get_ternary_schedule(step, total_steps, warmup_steps=100):
