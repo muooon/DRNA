@@ -72,20 +72,22 @@ class TernaryTrainingManager:
         """学習終了後、モデルの全2次元重みを完全な[-1.0, 0.0, 1.0]へ固定（結晶化）する"""
         with torch.no_grad():
             for name, module in self.model.named_modules():
-                if isinstance(module, nn.Linear) and hasattr(module, "raw_weight"):
-                    param = module.weight
-                    dist_neg1 = torch.abs(param + 1.0)
-                    dist_zero = torch.abs(param)
-                    dist_pos1 = torch.abs(param - 1.0)
-                        
-                    stacked_dists = torch.stack([dist_neg1, dist_zero, dist_pos1], dim=-1)
-                    chosen_slot = torch.argmin(stacked_dists, dim=-1)
-                    
-                    ternary_weight = chosen_slot.float() - 1.0
-                    
+                if isinstance(module, nn.Linear):
+                    # 拡張性：LLMの生命線である「embed」と「output_head」は絶対に3値化しない
+                    if "embed" in name or "output_head" in name:
+                        continue
+                    if not hasattr(module, "raw_weight"):
+                        param = module.weight
+                    # 学習中と同じ写像：tanh(3w) で soft 3値ターゲットを作る
+                    soft = torch.tanh(param * 3.0)
+                    # soft を hard 3値に潰す(しきい値は好みで調整可)
+                    ternary = torch.zeros_like(soft)
+                    ternary[soft >  0.08] =  1.0
+                    ternary[soft < -0.08] = -1.0
                     # 最終的に実数パラメータ自体を3値に上書きして完全固定
                     module.raw_weight.copy_(ternary_weight)
                     module.weight.copy_(ternary_weight)
+
         return self.model
 
 # 3値誘導外付けフックシステム(2次元重みを3値ブレンド）
