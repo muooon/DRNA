@@ -73,7 +73,7 @@ class TernaryTrainingManager:
         with torch.no_grad():
             for name, module in self.model.named_modules():
                 if isinstance(module, nn.Linear) and hasattr(module, "raw_weight"):
-                    param = module.raw_weight
+                    param = module.weight
                     dist_neg1 = torch.abs(param + 1.0)
                     dist_zero = torch.abs(param)
                     dist_pos1 = torch.abs(param - 1.0)
