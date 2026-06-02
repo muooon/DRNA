@@ -14,6 +14,12 @@ In this architecture, Attention and MLP are synchronized into a dual helix, and 
 This method rearranges sparse representations into dense ones to achieve high expressiveness using the depth‑direction structure alone, without increasing the number of dimensions.  
 A key feature of this approach is its ability to preserve the full connectivity of the Transformer architecture while suppressing catastrophic forgetting and retaining subtle fluctuations and phase information.  
 
+1.58bit (No STE required)  
+The pure ternary loop has been completed. This allows for both ternary training and inference, and it is also possible to port existing weights and binarize/ternarize them.  
+Re-training and continued learning of that ternary model are also possible, and STE is not required.  
+Explaining it in detail is a hassle, so to simplify it: in short, it's a D/A and A/D converter. It just does digital-to-analog and analog-to-digital mutual conversion.  
+Now! All that's left is to look forward to MLIR and make AI much simpler ! iPEX, ROCm, CUDA, —let's all get along !!  
+
 ---
 
 ### Explanation  
