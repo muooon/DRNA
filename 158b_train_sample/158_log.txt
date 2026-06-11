@@ -1,0 +1,133 @@
+>>> 学習を開始します (最大 3001 ステップ) ...
+※ 学習途中で安全に終了して実数保存したい場合は [Ctrl+C] を押してください。
+Step   0/3001 | CE-Loss: 11.2057 | Trio Blend:   0.00%
+Step 100/3001 | CE-Loss: 6.9426 | Trio Blend:   0.00%
+Step 200/3001 | CE-Loss: 3.3906 | Trio Blend:   0.00%
+Step 300/3001 | CE-Loss: 2.9785 | Trio Blend:   0.00%
+Step 400/3001 | CE-Loss: 2.9503 | Trio Blend:   0.34%
+Step 500/3001 | CE-Loss: 3.2835 | Trio Blend:   1.35%
+Step 600/3001 | CE-Loss: 2.7258 | Trio Blend:   3.01%
+Step 700/3001 | CE-Loss: 2.6781 | Trio Blend:   5.31%
+Step 800/3001 | CE-Loss: 2.6871 | Trio Blend:   8.22%
+Step 900/3001 | CE-Loss: 2.6504 | Trio Blend:  11.69%
+Step 1000/3001 | CE-Loss: 2.7052 | Trio Blend:  15.68%
+Step 1100/3001 | CE-Loss: 2.6893 | Trio Blend:  20.13%
+Step 1200/3001 | CE-Loss: 2.6540 | Trio Blend:  24.98%
+Step 1300/3001 | CE-Loss: 2.9715 | Trio Blend:  30.18%
+Step 1400/3001 | CE-Loss: 2.6832 | Trio Blend:  35.64%
+Step 1500/3001 | CE-Loss: 2.7556 | Trio Blend:  41.29%
+Step 1600/3001 | CE-Loss: 2.6135 | Trio Blend:  47.06%
+Step 1700/3001 | CE-Loss: 2.7902 | Trio Blend:  52.88%
+Step 1800/3001 | CE-Loss: 2.6309 | Trio Blend:  58.65%
+Step 1900/3001 | CE-Loss: 2.7317 | Trio Blend:  64.31%
+Step 2000/3001 | CE-Loss: 2.7056 | Trio Blend:  69.77%
+Step 2100/3001 | CE-Loss: 2.8362 | Trio Blend:  74.97%
+Step 2200/3001 | CE-Loss: 2.5756 | Trio Blend:  79.83%
+Step 2300/3001 | CE-Loss: 2.6942 | Trio Blend:  84.28%
+Step 2400/3001 | CE-Loss: 2.7381 | Trio Blend:  88.27%
+Step 2500/3001 | CE-Loss: 2.7062 | Trio Blend:  91.75%
+Step 2600/3001 | CE-Loss: 2.6731 | Trio Blend:  94.66%
+Step 2700/3001 | CE-Loss: 2.7142 | Trio Blend:  96.97%
+Step 2800/3001 | CE-Loss: 2.7696 | Trio Blend:  98.64%
+Step 2900/3001 | CE-Loss: 3.1693 | Trio Blend:  99.66%
+Step 3000/3001 | CE-Loss: 2.6913 | Trio Blend: 100.00%
+
+>>> [通常終了] 指定ステップに到達したため、3値重みの結晶化（export_ternary）を実行中...
+==================================================
+ エクスポート精度の選択
+==================================================
+1: bfloat16 (推奨)
+2: float16
+3: float32
+選択してください (1, 2, or 3): 1
+  ==> [完了] 2重保存を完全に排除したクリーンな1倍サイズモデルを保存しました: bf16_drna_pure_ternary_utf16.safetensors
+プロセスを正常に終了します。
+
+bf16_drna_pure_ternary_utf16.safetensors
+
+Layer Name                                    |    Mean |     Std |     Max |     Min |   SVD
+embed.weight                                  | -0.0000 |  0.9851 |    5.25 |   -5.69 |  5.54
+---------------------------------------------------------------------------------------------
+layers.0.out_proj.weight                      |  0.0014 |  0.7498 |    1.00 |   -1.00 |  5.33
+layers.0.qkv.weight                           |  0.0000 |  0.7529 |    1.00 |   -1.00 |  5.50
+layers.0.w1.weight                            | -0.0004 |  0.7527 |    1.00 |   -1.00 |  5.51
+layers.0.w2.weight                            |  0.0000 |  0.3649 |    1.00 |   -1.00 |  5.51
+layers.0.w3.weight                            | -0.0004 |  0.7512 |    1.00 |   -1.00 |  5.51
+layers.1.out_proj.weight                      | -0.0000 |  0.7565 |    1.00 |   -1.00 |  5.33
+layers.1.qkv.weight                           | -0.0001 |  0.7524 |    1.00 |   -1.00 |  5.50
+layers.1.w1.weight                            | -0.0010 |  0.7531 |    1.00 |   -1.00 |  5.51
+layers.1.w2.weight                            |  0.0020 |  0.3655 |    1.00 |   -1.00 |  5.51
+layers.1.w3.weight                            | -0.0010 |  0.7533 |    1.00 |   -1.00 |  5.51
+layers.10.out_proj.weight                     |  0.0013 |  0.7511 |    1.00 |   -1.00 |  5.33
+layers.10.qkv.weight                          |  0.0010 |  0.7527 |    1.00 |   -1.00 |  5.50
+layers.10.w1.weight                           |  0.0000 |  0.7515 |    1.00 |   -1.00 |  5.51
+layers.10.w2.weight                           | -0.0004 |  0.3632 |    1.00 |   -1.00 |  5.51
+layers.10.w3.weight                           |  0.0000 |  0.7521 |    1.00 |   -1.00 |  5.51
+layers.11.out_proj.weight                     | -0.0017 |  0.7527 |    1.00 |   -1.00 |  5.33
+layers.11.qkv.weight                          | -0.0001 |  0.7530 |    1.00 |   -1.00 |  5.50
+layers.11.w1.weight                           | -0.0007 |  0.7534 |    1.00 |   -1.00 |  5.51
+layers.11.w2.weight                           |  0.0001 |  0.3652 |    1.00 |   -1.00 |  5.51
+layers.11.w3.weight                           |  0.0006 |  0.7519 |    1.00 |   -1.00 |  5.51
+layers.12.out_proj.weight                     |  0.0021 |  0.7516 |    1.00 |   -1.00 |  5.33
+layers.12.qkv.weight                          |  0.0019 |  0.7526 |    1.00 |   -1.00 |  5.50
+layers.12.w1.weight                           | -0.0009 |  0.7529 |    1.00 |   -1.00 |  5.51
+layers.12.w2.weight                           |  0.0015 |  0.3653 |    1.00 |   -1.00 |  5.51
+layers.12.w3.weight                           |  0.0003 |  0.7515 |    1.00 |   -1.00 |  5.51
+layers.13.out_proj.weight                     |  0.0001 |  0.7549 |    1.00 |   -1.00 |  5.33
+layers.13.qkv.weight                          | -0.0009 |  0.7537 |    1.00 |   -1.00 |  5.50
+layers.13.w1.weight                           |  0.0010 |  0.7519 |    1.00 |   -1.00 |  5.51
+layers.13.w2.weight                           |  0.0004 |  0.3659 |    1.00 |   -1.00 |  5.51
+layers.13.w3.weight                           |  0.0006 |  0.7522 |    1.00 |   -1.00 |  5.51
+layers.14.out_proj.weight                     | -0.0000 |  0.7543 |    1.00 |   -1.00 |  5.33
+layers.14.qkv.weight                          | -0.0004 |  0.7534 |    1.00 |   -1.00 |  5.50
+layers.14.w1.weight                           |  0.0004 |  0.7533 |    1.00 |   -1.00 |  5.51
+layers.14.w2.weight                           |  0.0000 |  0.3648 |    1.00 |   -1.00 |  5.51
+layers.14.w3.weight                           |  0.0003 |  0.7531 |    1.00 |   -1.00 |  5.51
+layers.15.out_proj.weight                     |  0.0002 |  0.7529 |    1.00 |   -1.00 |  5.33
+layers.15.qkv.weight                          |  0.0004 |  0.7533 |    1.00 |   -1.00 |  5.50
+layers.15.w1.weight                           | -0.0004 |  0.7526 |    1.00 |   -1.00 |  5.51
+layers.15.w2.weight                           | -0.0008 |  0.3644 |    1.00 |   -1.00 |  5.51
+layers.15.w3.weight                           | -0.0002 |  0.7540 |    1.00 |   -1.00 |  5.51
+layers.2.out_proj.weight                      |  0.0016 |  0.7530 |    1.00 |   -1.00 |  5.33
+layers.2.qkv.weight                           | -0.0004 |  0.7528 |    1.00 |   -1.00 |  5.50
+layers.2.w1.weight                            | -0.0003 |  0.7531 |    1.00 |   -1.00 |  5.51
+layers.2.w2.weight                            |  0.0008 |  0.3642 |    1.00 |   -1.00 |  5.51
+layers.2.w3.weight                            |  0.0002 |  0.7526 |    1.00 |   -1.00 |  5.51
+layers.3.out_proj.weight                      |  0.0016 |  0.7538 |    1.00 |   -1.00 |  5.33
+layers.3.qkv.weight                           | -0.0003 |  0.7526 |    1.00 |   -1.00 |  5.50
+layers.3.w1.weight                            |  0.0004 |  0.7526 |    1.00 |   -1.00 |  5.51
+layers.3.w2.weight                            | -0.0004 |  0.3647 |    1.00 |   -1.00 |  5.51
+layers.3.w3.weight                            |  0.0008 |  0.7525 |    1.00 |   -1.00 |  5.51
+layers.4.out_proj.weight                      | -0.0010 |  0.7521 |    1.00 |   -1.00 |  5.33
+layers.4.qkv.weight                           |  0.0003 |  0.7528 |    1.00 |   -1.00 |  5.50
+layers.4.w1.weight                            |  0.0012 |  0.7524 |    1.00 |   -1.00 |  5.51
+layers.4.w2.weight                            | -0.0015 |  0.3646 |    1.00 |   -1.00 |  5.51
+layers.4.w3.weight                            |  0.0001 |  0.7524 |    1.00 |   -1.00 |  5.51
+layers.5.out_proj.weight                      |  0.0014 |  0.7523 |    1.00 |   -1.00 |  5.33
+layers.5.qkv.weight                           | -0.0006 |  0.7521 |    1.00 |   -1.00 |  5.50
+layers.5.w1.weight                            |  0.0004 |  0.7528 |    1.00 |   -1.00 |  5.51
+layers.5.w2.weight                            | -0.0009 |  0.3650 |    1.00 |   -1.00 |  5.51
+layers.5.w3.weight                            | -0.0007 |  0.7528 |    1.00 |   -1.00 |  5.51
+layers.6.out_proj.weight                      |  0.0017 |  0.7522 |    1.00 |   -1.00 |  5.33
+layers.6.qkv.weight                           |  0.0006 |  0.7548 |    1.00 |   -1.00 |  5.50
+layers.6.w1.weight                            | -0.0012 |  0.7528 |    1.00 |   -1.00 |  5.51
+layers.6.w2.weight                            | -0.0022 |  0.3639 |    1.00 |   -1.00 |  5.51
+layers.6.w3.weight                            | -0.0005 |  0.7519 |    1.00 |   -1.00 |  5.51
+layers.7.out_proj.weight                      |  0.0011 |  0.7524 |    1.00 |   -1.00 |  5.33
+layers.7.qkv.weight                           | -0.0010 |  0.7521 |    1.00 |   -1.00 |  5.50
+layers.7.w1.weight                            |  0.0002 |  0.7518 |    1.00 |   -1.00 |  5.51
+layers.7.w2.weight                            | -0.0012 |  0.3652 |    1.00 |   -1.00 |  5.51
+layers.7.w3.weight                            |  0.0003 |  0.7518 |    1.00 |   -1.00 |  5.51
+layers.8.out_proj.weight                      |  0.0008 |  0.7536 |    1.00 |   -1.00 |  5.33
+layers.8.qkv.weight                           |  0.0008 |  0.7528 |    1.00 |   -1.00 |  5.50
+layers.8.w1.weight                            | -0.0000 |  0.7526 |    1.00 |   -1.00 |  5.51
+layers.8.w2.weight                            |  0.0017 |  0.3662 |    1.00 |   -1.00 |  5.51
+layers.8.w3.weight                            |  0.0004 |  0.7530 |    1.00 |   -1.00 |  5.51
+layers.9.out_proj.weight                      | -0.0009 |  0.7525 |    1.00 |   -1.00 |  5.33
+layers.9.qkv.weight                           | -0.0004 |  0.7528 |    1.00 |   -1.00 |  5.50
+layers.9.w1.weight                            |  0.0006 |  0.7526 |    1.00 |   -1.00 |  5.51
+layers.9.w2.weight                            | -0.0000 |  0.3657 |    1.00 |   -1.00 |  5.51
+layers.9.w3.weight                            | -0.0007 |  0.7520 |    1.00 |   -1.00 |  5.51
+output_head.weight                            | -0.0015 |  0.1345 |    0.41 |   -0.43 |  4.89
+
+
