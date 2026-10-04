@@ -14,6 +14,9 @@ In this architecture, Attention and MLP are synchronized into a dual helix, and 
 This method rearranges sparse representations into dense ones to achieve high expressiveness using the depth‑direction structure alone, without increasing the number of dimensions.  
 A key feature of this approach is its ability to preserve the full connectivity of the Transformer architecture while suppressing catastrophic forgetting and retaining subtle fluctuations and phase information.  
 
+Furthermore, it supports reversible quantization switching (restoration). D-RNA has high quantization robustness, allowing custom compression beyond fp4, fp8, and fp16 (and returning to the original precision).  
+*Note: This is not a lossless restoration; rather, it interpolates quantized discrete gaps into a smooth continuous space through phase rotation.  
+
 1.58bit (No STE required)  
 The pure ternary loop has been completed. This allows for both ternary training and inference, and it is also possible to port existing weights and ternarize them.  
 Re-training and continued learning of that ternary model are also possible, and STE is not required.  
@@ -30,6 +33,8 @@ High‑Density Transformer and Fast Convergence via Dual‑Helix Resonant Contra
 ---
 
 ### Features  
+
+Reversible compression and restoration: D-RNA possesses quantization robustness and allows repeated transitions between sparse and dense states. For instance, data can be distributed in a sparse format, restored to a dense state at the distribution destination, updated, and recompressed.  
 High structural compatibility: It has the exact same input–output shape as a standard Transformer Block, allowing it to be smoothly substituted as the core of an architecture.  
 Resonant Contraction: By synchronizing Attention and the MLP in a double‑helix pattern and converging information into a phase field, it dramatically increases representational density.  
 Depth as an alternative to dimensionality: The spiral rotation (depth‑wise operations) compensates for limited dimensionality and enables holographic information retention without increasing parameter count.  
