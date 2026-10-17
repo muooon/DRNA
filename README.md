@@ -17,6 +17,11 @@ A key feature of this approach is its ability to preserve the full connectivity 
 Furthermore, it supports reversible quantization switching (restoration). D-RNA has high quantization robustness, allowing custom compression beyond fp4, fp8, and fp16 (and returning to the original precision).  
 *Note: This is not a lossless restoration; rather, it interpolates quantized discrete gaps into a smooth continuous space through phase rotation.  
 
+Reduction of O(N^2) Complexity via Hybrid Layers (FFN / Vanilla)  
+Hybrid layer synchronization: Alternating between Attention (contextual recall) and a single MLP layer (knowledge retention) that shares a rotation field (reducing computational load).  
+By interleaving standalone MLP layers with a shared rotation space, the model elegantly reduces the global attention bottleneck of O(N^2) while maintaining and inheriting information continuity and long-term memory via phase synchronization.  
+*Note: Please refer to the DRNA2nd folder for the implementation.  
+
 1.58bit (No STE required)  
 The pure ternary loop has been completed. This allows for both ternary training and inference, and it is also possible to port existing weights and ternarize them.  
 Re-training and continued learning of that ternary model are also possible, and STE is not required.  
