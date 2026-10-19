@@ -1,0 +1,292 @@
+🎲 今回の実行用ランダム共通シードを [2102688330] に設定しました。
+
+==========================================
+🥊 参戦: D-RNA
+Parameters: 854,282 | Shared Seed: 2102688330
+==========================================
+[D-RNA] Step [50/500] | Loss: 1.5589 | Test Acc: 41.31% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [100/500] | Loss: 1.3623 | Test Acc: 57.03% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [150/500] | Loss: 1.1908 | Test Acc: 58.69% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [200/500] | Loss: 0.7939 | Test Acc: 64.65% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [250/500] | Loss: 0.7994 | Test Acc: 68.85% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [300/500] | Loss: 0.9324 | Test Acc: 66.41% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [350/500] | Loss: 0.8197 | Test Acc: 70.90% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [400/500] | Loss: 0.9183 | Test Acc: 72.27% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [450/500] | Loss: 0.6242 | Test Acc: 74.71% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [500/500] | Loss: 0.7508 | Test Acc: 72.66% | VRAM Peak: 3162.40 MB
+🏁 D-RNA 完走！ (所要時間: 94.66秒)
+
+==========================================
+🥊 参戦: Standard Transformer
+Parameters: 895,242 | Shared Seed: 2102688330
+==========================================
+[Standard Transformer] Step [50/500] | Loss: 1.7289 | Test Acc: 39.36% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [100/500] | Loss: 1.0356 | Test Acc: 59.18% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [150/500] | Loss: 1.0239 | Test Acc: 60.94% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [200/500] | Loss: 1.0153 | Test Acc: 65.43% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [250/500] | Loss: 0.6641 | Test Acc: 74.12% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [300/500] | Loss: 0.8014 | Test Acc: 69.73% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [350/500] | Loss: 0.6122 | Test Acc: 75.10% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [400/500] | Loss: 0.5361 | Test Acc: 77.54% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [450/500] | Loss: 0.5839 | Test Acc: 76.17% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [500/500] | Loss: 0.4155 | Test Acc: 76.56% | VRAM Peak: 2021.88 MB
+🏁 Standard Transformer 完走！ (所要時間: 180.17秒)
+
+==========================================
+🥊 参戦: Hybrid Linear Attention
+Parameters: 1,051,274 | Shared Seed: 2102688330
+==========================================
+[Hybrid Linear Attention] Step [50/500] | Loss: 1.5944 | Test Acc: 39.94% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [100/500] | Loss: 1.2924 | Test Acc: 50.49% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [150/500] | Loss: 1.2356 | Test Acc: 50.20% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [200/500] | Loss: 1.2646 | Test Acc: 56.64% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [250/500] | Loss: 1.1462 | Test Acc: 57.52% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [300/500] | Loss: 1.5586 | Test Acc: 46.39% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [350/500] | Loss: 1.0547 | Test Acc: 60.45% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [400/500] | Loss: 0.8362 | Test Acc: 62.50% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [450/500] | Loss: 0.9585 | Test Acc: 61.91% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [500/500] | Loss: 1.0872 | Test Acc: 64.55% | VRAM Peak: 3940.44 MB
+🏁 Hybrid Linear Attention 完走！ (所要時間: 114.22秒)
+
+==========================================
+🏆 真・3者ガチンコ対決 最終結果サマリー
+==========================================
+1. Standard Transformer        -> Acc: 76.56% (Loss: 0.4155)
+2. D-RNA                       -> Acc: 72.66% (Loss: 0.7508)
+3. Hybrid Linear Attention     -> Acc: 64.55% (Loss: 1.0872)
+
+------
+
+🎲 今回の実行用ランダム共通シードを [1909530907] に設定しました。
+
+==========================================
+🥊 参戦: D-RNA
+Parameters: 854,282 | Shared Seed: 1909530907
+==========================================
+[D-RNA] Step [50/500] | Loss: 1.6150 | Test Acc: 45.70% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [100/500] | Loss: 1.5050 | Test Acc: 50.59% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [150/500] | Loss: 1.0164 | Test Acc: 54.49% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [200/500] | Loss: 1.0853 | Test Acc: 55.76% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [250/500] | Loss: 0.8569 | Test Acc: 70.31% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [300/500] | Loss: 0.9267 | Test Acc: 69.92% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [350/500] | Loss: 0.8958 | Test Acc: 68.46% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [400/500] | Loss: 0.6982 | Test Acc: 70.90% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [450/500] | Loss: 0.8146 | Test Acc: 68.85% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [500/500] | Loss: 0.8701 | Test Acc: 71.78% | VRAM Peak: 3162.40 MB
+🏁 D-RNA 完走！ (所要時間: 94.29秒)
+
+==========================================
+🥊 参戦: Standard Transformer
+Parameters: 895,242 | Shared Seed: 1909530907
+==========================================
+[Standard Transformer] Step [50/500] | Loss: 1.4094 | Test Acc: 41.70% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [100/500] | Loss: 1.4452 | Test Acc: 55.18% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [150/500] | Loss: 0.9901 | Test Acc: 63.77% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [200/500] | Loss: 0.8285 | Test Acc: 66.99% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [250/500] | Loss: 1.0613 | Test Acc: 64.65% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [300/500] | Loss: 0.9335 | Test Acc: 72.56% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [350/500] | Loss: 0.5523 | Test Acc: 74.02% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [400/500] | Loss: 0.7962 | Test Acc: 76.37% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [450/500] | Loss: 0.6681 | Test Acc: 75.88% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [500/500] | Loss: 0.7260 | Test Acc: 75.10% | VRAM Peak: 2021.88 MB
+🏁 Standard Transformer 完走！ (所要時間: 181.07秒)
+
+==========================================
+🥊 参戦: Hybrid Linear Attention
+Parameters: 1,051,274 | Shared Seed: 1909530907
+==========================================
+[Hybrid Linear Attention] Step [50/500] | Loss: 1.4192 | Test Acc: 47.85% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [100/500] | Loss: 1.2756 | Test Acc: 47.85% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [150/500] | Loss: 1.4378 | Test Acc: 50.98% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [200/500] | Loss: 1.0782 | Test Acc: 59.77% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [250/500] | Loss: 1.4091 | Test Acc: 50.68% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [300/500] | Loss: 1.0656 | Test Acc: 56.84% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [350/500] | Loss: 1.0032 | Test Acc: 54.79% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [400/500] | Loss: 0.8625 | Test Acc: 63.38% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [450/500] | Loss: 0.9225 | Test Acc: 67.19% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [500/500] | Loss: 1.0515 | Test Acc: 59.86% | VRAM Peak: 3940.44 MB
+🏁 Hybrid Linear Attention 完走！ (所要時間: 115.74秒)
+
+==========================================
+🏆 真・3者ガチンコ対決 最終結果サマリー
+==========================================
+1. Standard Transformer        -> Acc: 75.10% (Loss: 0.7260)
+2. D-RNA                       -> Acc: 71.78% (Loss: 0.8701)
+3. Hybrid Linear Attention     -> Acc: 59.86% (Loss: 1.0515)
+
+------
+
+🎲 今回の実行用ランダム共通シードを [769660273] に設定しました。
+
+==========================================
+🥊 参戦: D-RNA
+Parameters: 854,282 | Shared Seed: 769660273
+==========================================
+[D-RNA] Step [50/500] | Loss: 1.6107 | Test Acc: 44.92% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [100/500] | Loss: 1.3443 | Test Acc: 49.02% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [150/500] | Loss: 1.0772 | Test Acc: 63.96% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [200/500] | Loss: 1.1310 | Test Acc: 64.94% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [250/500] | Loss: 0.9090 | Test Acc: 69.14% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [300/500] | Loss: 1.2999 | Test Acc: 52.93% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [350/500] | Loss: 0.8606 | Test Acc: 71.09% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [400/500] | Loss: 1.1316 | Test Acc: 71.09% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [450/500] | Loss: 0.5543 | Test Acc: 72.17% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [500/500] | Loss: 0.7801 | Test Acc: 72.56% | VRAM Peak: 3162.40 MB
+🏁 D-RNA 完走！ (所要時間: 96.44秒)
+
+==========================================
+🥊 参戦: Standard Transformer
+Parameters: 895,242 | Shared Seed: 769660273
+==========================================
+[Standard Transformer] Step [50/500] | Loss: 1.4252 | Test Acc: 44.92% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [100/500] | Loss: 1.0055 | Test Acc: 49.41% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [150/500] | Loss: 1.0473 | Test Acc: 60.55% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [200/500] | Loss: 0.9511 | Test Acc: 66.60% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [250/500] | Loss: 0.8259 | Test Acc: 74.12% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [300/500] | Loss: 0.6679 | Test Acc: 75.20% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [350/500] | Loss: 0.6019 | Test Acc: 75.29% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [400/500] | Loss: 0.7291 | Test Acc: 76.27% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [450/500] | Loss: 0.7903 | Test Acc: 73.54% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [500/500] | Loss: 0.6273 | Test Acc: 77.83% | VRAM Peak: 2021.88 MB
+🏁 Standard Transformer 完走！ (所要時間: 182.15秒)
+
+==========================================
+🥊 参戦: Hybrid Linear Attention
+Parameters: 1,051,274 | Shared Seed: 769660273
+==========================================
+[Hybrid Linear Attention] Step [50/500] | Loss: 1.4689 | Test Acc: 41.60% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [100/500] | Loss: 1.2383 | Test Acc: 44.92% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [150/500] | Loss: 1.2782 | Test Acc: 45.51% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [200/500] | Loss: 1.1620 | Test Acc: 42.38% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [250/500] | Loss: 1.0534 | Test Acc: 57.03% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [300/500] | Loss: 1.1701 | Test Acc: 53.91% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [350/500] | Loss: 0.9911 | Test Acc: 53.03% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [400/500] | Loss: 1.2804 | Test Acc: 48.24% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [450/500] | Loss: 2.6077 | Test Acc: 44.14% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [500/500] | Loss: 1.1233 | Test Acc: 63.77% | VRAM Peak: 3940.44 MB
+🏁 Hybrid Linear Attention 完走！ (所要時間: 116.69秒)
+
+==========================================
+🏆 真・3者ガチンコ対決 最終結果サマリー
+==========================================
+1. Standard Transformer        -> Acc: 77.83% (Loss: 0.6273)
+2. D-RNA                       -> Acc: 72.56% (Loss: 0.7801)
+3. Hybrid Linear Attention     -> Acc: 63.77% (Loss: 1.1233)
+
+------
+
+🎲 今回の実行用ランダム共通シードを [604584268] に設定しました。
+
+==========================================
+🥊 参戦: D-RNA
+Parameters: 854,282 | Shared Seed: 604584268
+==========================================
+[D-RNA] Step [50/500] | Loss: 1.5057 | Test Acc: 50.98% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [100/500] | Loss: 1.4701 | Test Acc: 48.05% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [150/500] | Loss: 1.1012 | Test Acc: 62.89% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [200/500] | Loss: 0.9555 | Test Acc: 62.79% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [250/500] | Loss: 0.8656 | Test Acc: 69.34% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [300/500] | Loss: 0.9478 | Test Acc: 69.04% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [350/500] | Loss: 0.8883 | Test Acc: 71.58% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [400/500] | Loss: 0.9914 | Test Acc: 67.97% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [450/500] | Loss: 0.8044 | Test Acc: 68.75% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [500/500] | Loss: 0.7933 | Test Acc: 72.17% | VRAM Peak: 3162.40 MB
+🏁 D-RNA 完走！ (所要時間: 95.56秒)
+
+==========================================
+🥊 参戦: Standard Transformer
+Parameters: 895,242 | Shared Seed: 604584268
+==========================================
+[Standard Transformer] Step [50/500] | Loss: 1.5344 | Test Acc: 39.55% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [100/500] | Loss: 1.0388 | Test Acc: 57.13% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [150/500] | Loss: 1.0780 | Test Acc: 55.86% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [200/500] | Loss: 1.0578 | Test Acc: 70.41% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [250/500] | Loss: 0.6094 | Test Acc: 72.66% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [300/500] | Loss: 0.9625 | Test Acc: 73.83% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [350/500] | Loss: 0.6549 | Test Acc: 73.83% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [400/500] | Loss: 0.7163 | Test Acc: 76.95% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [450/500] | Loss: 0.6677 | Test Acc: 75.00% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [500/500] | Loss: 0.7345 | Test Acc: 76.56% | VRAM Peak: 2021.88 MB
+🏁 Standard Transformer 完走！ (所要時間: 182.36秒)
+
+==========================================
+🥊 参戦: Hybrid Linear Attention
+Parameters: 1,051,274 | Shared Seed: 604584268
+==========================================
+[Hybrid Linear Attention] Step [50/500] | Loss: 1.4786 | Test Acc: 44.53% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [100/500] | Loss: 1.1440 | Test Acc: 50.00% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [150/500] | Loss: 1.2168 | Test Acc: 56.93% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [200/500] | Loss: 1.1479 | Test Acc: 59.96% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [250/500] | Loss: 1.1735 | Test Acc: 57.52% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [300/500] | Loss: 0.9482 | Test Acc: 62.01% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [350/500] | Loss: 1.5104 | Test Acc: 56.64% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [400/500] | Loss: 0.8230 | Test Acc: 58.98% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [450/500] | Loss: 1.0544 | Test Acc: 57.03% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [500/500] | Loss: 1.0610 | Test Acc: 66.99% | VRAM Peak: 3940.44 MB
+🏁 Hybrid Linear Attention 完走！ (所要時間: 116.62秒)
+
+==========================================
+🏆 真・3者ガチンコ対決 最終結果サマリー
+==========================================
+1. Standard Transformer        -> Acc: 76.56% (Loss: 0.7345)
+2. D-RNA                       -> Acc: 72.17% (Loss: 0.7933)
+3. Hybrid Linear Attention     -> Acc: 66.99% (Loss: 1.0610)
+
+---
+
+🎲 今回の実行用ランダム共通シードを [2122923566] に設定しました。
+
+==========================================
+🥊 参戦: D-RNA
+Parameters: 854,282 | Shared Seed: 2122923566
+==========================================
+[D-RNA] Step [50/500] | Loss: 1.3827 | Test Acc: 40.53% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [100/500] | Loss: 1.4593 | Test Acc: 56.05% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [150/500] | Loss: 1.0999 | Test Acc: 63.67% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [200/500] | Loss: 1.1106 | Test Acc: 64.36% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [250/500] | Loss: 1.0782 | Test Acc: 64.06% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [300/500] | Loss: 0.9890 | Test Acc: 65.43% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [350/500] | Loss: 0.7136 | Test Acc: 68.46% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [400/500] | Loss: 0.6304 | Test Acc: 71.09% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [450/500] | Loss: 0.8918 | Test Acc: 71.19% | VRAM Peak: 3162.40 MB
+[D-RNA] Step [500/500] | Loss: 0.8672 | Test Acc: 72.27% | VRAM Peak: 3162.40 MB
+🏁 D-RNA 完走！ (所要時間: 94.31秒)
+
+==========================================
+🥊 参戦: Standard Transformer
+Parameters: 895,242 | Shared Seed: 2122923566
+==========================================
+[Standard Transformer] Step [50/500] | Loss: 1.5428 | Test Acc: 43.85% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [100/500] | Loss: 1.2049 | Test Acc: 51.76% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [150/500] | Loss: 1.1008 | Test Acc: 55.08% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [200/500] | Loss: 0.8927 | Test Acc: 66.41% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [250/500] | Loss: 0.9282 | Test Acc: 54.49% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [300/500] | Loss: 0.6497 | Test Acc: 71.48% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [350/500] | Loss: 0.7031 | Test Acc: 72.56% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [400/500] | Loss: 0.8268 | Test Acc: 71.09% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [450/500] | Loss: 0.6823 | Test Acc: 75.49% | VRAM Peak: 2021.88 MB
+[Standard Transformer] Step [500/500] | Loss: 0.8225 | Test Acc: 75.00% | VRAM Peak: 2021.88 MB
+🏁 Standard Transformer 完走！ (所要時間: 181.49秒)
+
+==========================================
+🥊 参戦: Hybrid Linear Attention
+Parameters: 1,051,274 | Shared Seed: 2122923566
+==========================================
+[Hybrid Linear Attention] Step [50/500] | Loss: 1.3298 | Test Acc: 43.16% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [100/500] | Loss: 1.1507 | Test Acc: 49.22% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [150/500] | Loss: 1.1928 | Test Acc: 50.20% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [200/500] | Loss: 1.2049 | Test Acc: 44.04% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [250/500] | Loss: 1.5129 | Test Acc: 47.07% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [300/500] | Loss: 1.2455 | Test Acc: 59.18% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [350/500] | Loss: 1.0160 | Test Acc: 53.42% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [400/500] | Loss: 1.3341 | Test Acc: 45.31% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [450/500] | Loss: 0.8103 | Test Acc: 63.09% | VRAM Peak: 3940.44 MB
+[Hybrid Linear Attention] Step [500/500] | Loss: 1.4970 | Test Acc: 42.68% | VRAM Peak: 3940.44 MB
+🏁 Hybrid Linear Attention 完走！ (所要時間: 116.85秒)
+
+==========================================
+🏆 真・3者ガチンコ対決 最終結果サマリー
+==========================================
+1. Standard Transformer        -> Acc: 75.00% (Loss: 0.8225)
+2. D-RNA                       -> Acc: 72.27% (Loss: 0.8672)
+3. Hybrid Linear Attention     -> Acc: 42.68% (Loss: 1.4970)
